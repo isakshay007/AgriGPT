@@ -40,7 +40,6 @@ class AgriAgentBase(ABC):
         - only query → text
         - both non-empty → multimodal
         """
-
         normalized_query = AgriAgentBase._normalize_query(query)
 
         if normalized_query and image_path:
@@ -53,15 +52,17 @@ class AgriAgentBase(ABC):
     # Actual logging (FIXED to include image_path)
     # --------------------------------------------------
     def record(self, query, response, query_type, image_path=None):
+        # Ensure response is string BEFORE slicing
+        safe_response = str(response)
+
         entry = {
             "timestamp": datetime.utcnow().isoformat(),
             "agent": self.name,
             "query": query or "",
-            "response": response[:5000],
+            "response": safe_response[:5000],
             "type": query_type,
         }
 
-        # NEW → include image path/filename for debugging
         if image_path:
             entry["image_path"] = image_path
 
@@ -71,9 +72,19 @@ class AgriAgentBase(ABC):
             pass  # Never break execution because of logging
 
     # --------------------------------------------------
-    # Wrapper used by ALL agents (UPDATED)
+    # Wrapper used by ALL agents (UPDATED — FIX APPLIED)
     # --------------------------------------------------
     def respond_and_record(self, query, response, image_path=None):
+        """
+        FIX:
+        Force every agent output to be a STRING before returning.
+        Prevents FastAPI OpenAPI '$ref' error from non-string responses.
+        """
         query_type = self._detect_query_type(query, image_path)
-        self.record(query, response, query_type, image_path=image_path)
-        return response
+
+        # Always convert to string BEFORE recording or returning
+        safe_response = str(response)
+
+        self.record(query, safe_response, query_type, image_path=image_path)
+
+        return safe_response

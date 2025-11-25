@@ -8,41 +8,41 @@ class IrrigationAgent(AgriAgentBase):
     """
     Irrigation Agent
     -----------------
-    Provides expert guidance on:
+    Provides guidance on:
     - Watering intervals
     - Soil moisture balance
-    - Drip/sprinkler operation
-    - Water-saving practices
+    - Drip/sprinkler use
+    - Water-saving methods
     """
 
     name = "IrrigationAgent"
 
     def handle_query(self, query: str = None, image_path: str = None) -> str:
         """
-        Handle irrigation-related queries.
+        Irrigation logic.
         Image input is ignored for this agent.
         """
 
         # ------------------------------------------------------
-        # CASE 0 — Missing query
+        # CASE 0 — Validate query
         # ------------------------------------------------------
-        if not query or not query.strip():
-            response = (
+        if not query or not isinstance(query, str) or not query.strip():
+            msg = (
                 "Please ask an irrigation-related question such as:\n"
                 "- 'How often should I irrigate onions?'\n"
                 "- 'How to save water in drip irrigation?'\n"
                 "- 'How to adjust irrigation during summer?'\n"
             )
             return self.respond_and_record(
-                "No query provided",
-                response,
-                image_path=image_path
+                query or "",
+                msg,
+                image_path=image_path,
             )
 
         query_clean = query.strip()
 
         # ------------------------------------------------------
-        # CASE 1 — Build LLM prompt
+        # CASE 1 — Construct robust prompt
         # ------------------------------------------------------
         prompt = f"""
         You are **AgriGPT – Irrigation Expert**.
@@ -52,16 +52,16 @@ class IrrigationAgent(AgriAgentBase):
 
         Provide clear irrigation guidance covering:
         - Correct watering intervals (daily / weekly / stage-based)
-        - Soil moisture management (how to check & maintain)
+        - Soil moisture checking & maintenance
         - Drip, sprinkler, and flood irrigation best practices
         - Water-saving techniques (mulching, scheduling, pressure control)
-        - How to adjust irrigation during rainfall or extreme heat
+        - Adjusting irrigation during rainfall or extreme heat
         - Soil-type adjustments (sandy, clay, loam)
 
         Use:
-        - Short sentences
         - Bullet points
-        - Very simple farmer-friendly tone
+        - Short sentences
+        - Very farmer-friendly tone
         """
 
         # ------------------------------------------------------
@@ -72,11 +72,14 @@ class IrrigationAgent(AgriAgentBase):
         except Exception as e:
             result = f"Error generating irrigation advice: {e}"
 
+        # Always safe-string
+        result = str(result)
+
         # ------------------------------------------------------
         # CASE 3 — Log & Return
         # ------------------------------------------------------
         return self.respond_and_record(
             query_clean,
             result,
-            image_path=image_path
+            image_path=image_path,
         )

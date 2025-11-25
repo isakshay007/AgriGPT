@@ -6,10 +6,15 @@ import threading
 from pathlib import Path
 from datetime import datetime
 
-LOG_PATH = Path("backend/data/query_log.json")
-TMP_PATH = Path("backend/data/query_log_tmp.json")
+# -------------------------------------------------------------------------
+# FIX 1: Absolute, package-safe log directory
+# -------------------------------------------------------------------------
+BASE_DIR = Path(__file__).resolve().parent.parent  # backend/services → backend
+DATA_DIR = BASE_DIR / "data"
+LOG_PATH = DATA_DIR / "query_log.json"
+TMP_PATH = DATA_DIR / "query_log_tmp.json"
 
-LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # Thread lock (same-process)
 _log_lock = threading.Lock()
@@ -28,7 +33,6 @@ def _sanitize_entry(entry: dict) -> dict:
         if isinstance(val, (str, int, float, bool)) or val is None:
             clean[key] = val
         else:
-            # Approximate complex values
             clean[key] = str(val)
     return clean
 
@@ -40,24 +44,23 @@ def _atomic_write(data: list):
     """
     with open(TMP_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
-
-    # Atomic replace
     os.replace(TMP_PATH, LOG_PATH)
 
 
 def log_interaction(entry: dict):
     """
     Append a single query/response record to query_log.json.
-    Thread-safe, atomic, and corruption-proof.
+    Thread-safe, atomic, corruption-proof, and rotation-safe.
     """
 
     clean_entry = _sanitize_entry(entry)
-    if "timestamp" not in clean_entry:
-        clean_entry["timestamp"] = datetime.utcnow().isoformat()
+    clean_entry.setdefault("timestamp", datetime.utcnow().isoformat())
 
     with _log_lock:
+        # -------------------------------------------------------------
+        # Step 1 — Load existing logs
+        # -------------------------------------------------------------
         try:
-            # Step 1 — Load existing logs (if valid JSON)
             if LOG_PATH.exists():
                 with open(LOG_PATH, "r", encoding="utf-8") as f:
                     logs = json.load(f)
@@ -65,21 +68,30 @@ def log_interaction(entry: dict):
                     logs = []
             else:
                 logs = []
-
         except Exception:
-            # JSON corrupt → reset to empty
             logs = []
 
-        # Step 2 — Append
+        # -------------------------------------------------------------
+        # Step 2 — Append new entry
+        # -------------------------------------------------------------
         logs.append(clean_entry)
 
-        # Step 3 — Rotate if too large
-        if LOG_PATH.exists() and LOG_PATH.stat().st_size > MAX_LOG_SIZE_BYTES:
+        # -------------------------------------------------------------
+        # Step 3 — Rotate BEFORE writing if new size exceeds threshold
+        # -------------------------------------------------------------
+        try:
+            approx_new_size = len(json.dumps(logs).encode("utf-8"))
+        except Exception:
+            approx_new_size = 0
+
+        if approx_new_size > MAX_LOG_SIZE_BYTES:
             archive_path = LOG_PATH.with_suffix(".archive.json")
             os.replace(LOG_PATH, archive_path)
-            logs = [clean_entry]   # start fresh after rotation
+            logs = [clean_entry]  # start fresh after rotation
 
+        # -------------------------------------------------------------
         # Step 4 — Atomic write
+        # -------------------------------------------------------------
         try:
             _atomic_write(logs)
         except Exception as e:

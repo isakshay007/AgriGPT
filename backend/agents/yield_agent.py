@@ -8,92 +8,90 @@ class YieldAgent(AgriAgentBase):
     """
     Yield Optimization Agent
     ------------------------
-    Provides farmers with:
-    - Expected yield ranges
-    - Diagnosis of low-yield causes
-    - Step-by-step improvement actions
-    - Crop-stage-specific advice
+    Gives farmers:
+    - Expected yield range for a crop
+    - Root causes for low yield
+    - Stage-wise improvement plan
+    - Simple, practical recommendations
     """
 
     name = "YieldAgent"
 
     def handle_query(self, query: str = None, image_path: str = None) -> str:
         """
-        Handles yield-related queries such as:
-        - "How to increase rice yield?"
-        - "Why is my maize yield low?"
-        - "What reduces tomato productivity?"
+        Handles all yield-related questions.
+        Image input is ignored for this agent.
         """
 
         # ------------------------------------------------------
-        # CASE 0 — Missing query
+        # CASE 0 — Empty or missing text
         # ------------------------------------------------------
         if not query or not query.strip():
             msg = (
                 "Please describe your crop and the yield problem. Examples:\n"
                 "- 'My rice yield is low this season'\n"
-                "- 'Maize only giving 2 tons per hectare'\n"
-                "- 'Tomato plants giving fewer fruits'"
+                "- 'Maize giving only 2 tons per hectare'\n"
+                "- 'Tomato plants producing fewer fruits'\n"
             )
             return self.respond_and_record(
-                "No query provided",
-                msg,
+                query="No query provided",
+                response=msg,
                 image_path=image_path
             )
 
         query_clean = query.strip()
 
         # ------------------------------------------------------
-        # CASE 1 — Build prompt for Groq
+        # CASE 1 — Build LLM prompt
         # ------------------------------------------------------
         prompt = f"""
-        You are AgriGPT, a specialist in crop yield improvement.
+        You are **AgriGPT – Yield Improvement Advisor**.
 
-        The farmer asked:
+        The farmer asks:
         \"\"\"{query_clean}\"\"\"
 
-        Provide a clear, simple explanation including:
+        Provide clear guidance with:
 
         **1. Expected Yield Range**
-        - Typical yield in India/global range for that crop (approximate).
+        - Typical India/global yield range for this crop.
 
         **2. Causes of Low Yield**
-        Cover key categories:
-        - Soil quality or nutrient imbalance
-        - Fertilizer gaps (wrong type, timing, under-application)
-        - Water stress (too little/too much)
-        - Pest or disease pressure
-        - Seed variety issues
-        - Weather or planting time
+        Cover major factors:
+        - Soil nutrient imbalance
+        - Fertilizer schedule mistakes
+        - Water stress (too much or too little)
+        - Pests or diseases affecting yield
+        - Poor seed variety
+        - Climate or incorrect planting time
 
-        **3. Actionable Yield Improvement Steps**
-        - Fertilizer schedule (stage-wise)
-        - Irrigation intervals
-        - Soil improvement tips
-        - Pest/disease prevention
-        - Seed/variety recommendations
+        **3. Practical Improvement Steps**
+        Include:
+        - Ideal fertilizer schedule (stage-wise)
+        - Correct irrigation intervals
+        - Soil enrichment methods
+        - Pest/disease prevention tips
+        - Recommended varieties for better yield
 
-        **4. Simple, farmer-friendly language**
-        - Short sentences
-        - Bullet points
+        **4. Language Style**
+        - Short bullet points
+        - Simple Indian farmer-friendly tone
         - No technical jargon
-
-        Keep the output practical and easy to follow.
+        - Clear, step-by-step format
         """
 
         # ------------------------------------------------------
-        # CASE 2 — Query Groq safely
+        # CASE 2 — Query Groq Safely
         # ------------------------------------------------------
         try:
-            result = query_groq_text(prompt)
+            output = query_groq_text(prompt)
         except Exception as e:
-            result = f"Error generating yield advice: {e}"
+            output = f"Error generating yield advice: {str(e)}"
 
         # ------------------------------------------------------
-        # RETURN + LOG
+        # CASE 3 — Log + Return
         # ------------------------------------------------------
         return self.respond_and_record(
-            query_clean,
-            result,
+            query=query_clean,
+            response=output,
             image_path=image_path
         )

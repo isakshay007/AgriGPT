@@ -1,3 +1,5 @@
+# backend/services/rag_service.py
+
 import json
 import os
 from typing import List, Dict
@@ -12,27 +14,15 @@ DATA_PATH = os.path.join(os.path.dirname(__file__), "../data/subsidies.json")
 VECTOR_DB_PATH = os.path.join(os.path.dirname(__file__), "../data/faiss_index")
 
 
-
 def _clean_query(text: str) -> str:
-    """
-    Clean query for FAISS safety WITHOUT removing Indian languages.
-    - Normalize Unicode (Tamil/Hindi safe)
-    - Remove control characters
-    - Collapse whitespace
-    """
+    """Clean query for FAISS safety."""
     if not isinstance(text, str):
         return ""
-
-    # Unicode normalize (Tamil/Hindi safe)
     text = unicodedata.normalize("NFKC", text)
-
-    # Remove invisible control characters (keeps Indian alphabets)
     text = re.sub(r"[\x00-\x1f\x7f]", " ", text)
-
-    # Collapse multiple spaces
     text = re.sub(r"\s+", " ", text)
-
     return text.strip().lower()
+
 
 class RAG:
     _instance = None
@@ -44,13 +34,10 @@ class RAG:
         return cls._instance
 
     def initialize(self):
-        """Initialize embeddings + FAISS index."""
         self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         self.vector_store = None
 
-        # ----------------------
-        # 1. Try loading FAISS
-        # ----------------------
+        # Try load FAISS
         if os.path.exists(VECTOR_DB_PATH):
             try:
                 print("Loading existing FAISS index...")
@@ -61,33 +48,26 @@ class RAG:
                 )
                 print("FAISS index loaded.")
                 return
-
             except Exception as e:
                 print(f"[RAG] Failed to load FAISS index: {e}")
-                print("[RAG] Deleting corrupted index and rebuilding...")
-
-                # Delete corrupted index
+                print("[RAG] Rebuilding fresh index...")
                 try:
-                    for file in os.listdir(VECTOR_DB_PATH):
-                        os.remove(os.path.join(VECTOR_DB_PATH, file))
-                    os.rmdir(VECTOR_DB_PATH)
+                    import shutil
+                    if os.path.exists(VECTOR_DB_PATH):
+                        shutil.rmtree(VECTOR_DB_PATH)
                 except:
                     pass
 
-        # ----------------------
-        # 2. Rebuild fresh index
-        # ----------------------
+        # Build new index
         if not os.path.exists(DATA_PATH):
             print(f"[RAG] subsidies.json not found at: {DATA_PATH}")
             return
 
-        with open(DATA_PATH, "r") as f:
+        with open(DATA_PATH, "r", encoding="utf-8") as f:
             raw_data = json.load(f)
 
         documents = []
         for item in raw_data:
-
-            # Safe extraction of keys
             scheme_name = item.get("scheme_name", "Unknown Scheme")
             eligibility = item.get("eligibility", "Not Provided")
             benefits = item.get("benefits", "Not Provided")
@@ -109,13 +89,10 @@ class RAG:
         self.vector_store.save_local(VECTOR_DB_PATH)
         print("[RAG] FAISS index built and saved successfully.")
 
-    # ------------------------------------------------------------------
-    # RETRIEVAL
-    # ------------------------------------------------------------------
-    def retrieve(self, query: str, k: int = 2) -> List[Dict]:
+    def retrieve(self, query: str, k: int = 2) -> List[Dict[str, str]]:
         """
-        Retrieve relevant subsidies.
-        Safe against FAISS errors or missing vectors.
+        ✅ SAFE: Returns plain dicts (no Pydantic).
+        OpenAPI will never touch this.
         """
         if not query or not query.strip():
             return []
@@ -128,12 +105,26 @@ class RAG:
 
         try:
             docs = self.vector_store.similarity_search(query_clean, k=k)
-            return [d.metadata for d in docs]
-
         except Exception as e:
             print(f"[RAG] Retrieval error: {e}")
             return []
 
+        results = []
+        for d in docs:
+            meta = d.metadata or {}
+            
+            # ✅ Return plain dict (OpenAPI-safe)
+            results.append({
+                "scheme_name": str(meta.get("scheme_name", "Unknown Scheme")),
+                "eligibility": str(meta.get("eligibility", "Not Provided")),
+                "benefits": str(meta.get("benefits", "Not Provided")),
+                "application_steps": str(meta.get("application_steps", "")),
+                "documents": str(meta.get("documents", "")),
+                "notes": str(meta.get("notes", "")),
+            })
 
-# Singleton access
+        return results
+
+
+# Singleton instance
 rag_service = RAG()

@@ -16,49 +16,50 @@ class CropAgent(AgriAgentBase):
         - Soil preparation
         - Crop growth timing
         - Yield improvement
-        (Image input is ignored for this agent)
         """
 
-        # Validate text input
+        # Normalize text
         if not query or not query.strip():
             response = (
                 "Please ask a crop-related question. Example:\n"
-                "- 'How to improve my rice yield?'\n"
-                "- 'What fertilizer should I use for tomatoes?'"
+                "- How to improve my rice yield?\n"
+                "- What fertilizer should I use for tomatoes?"
             )
             return self.respond_and_record(
-                query="No query provided",
+                query="",
                 response=response,
                 image_path=image_path
             )
 
-        # --- Construct AI prompt ---
+        clean_query = query.strip()
+
+        # Build LLM prompt
         prompt = f"""
-        You are **AgriGPT – Crop Management Specialist**.
+        You are AgriGPT – Crop Management Specialist.
 
         The farmer asks:
-        "{query}"
+        "{clean_query}"
 
         Provide clear, simple, farmer-friendly advice.
-        MUST include:
-        - Fertilizer type + dosage
-        - Soil preparation tips
-        - Growth-stage guidance or yield improvement tips
-        - Specific actionable steps (not theory)
-        - Tamil Nadu/Kharif relevance if applicable
+        Include:
+        • Fertilizer type + dosage
+        • Soil preparation steps
+        • Growth-stage guidance or yield improvement tips
+        • 3–5 specific actionable steps (no theory)
+        • Tamil Nadu / Kharif seasonal context where relevant
 
-        Keep it short, practical, and supportive.
+        Keep the answer practical and easy to follow.
         """
 
-        # --- Query Groq API ---
+        # Query Groq (always returns string through base class)
         try:
-            response = query_groq_text(prompt)
+            resp = query_groq_text(prompt)
         except Exception as e:
-            response = f"Error generating crop advice: {e}"
+            resp = f"Error generating crop advice: {e}"
 
-        # --- Log + return ---
+        # Log + return (respond_and_record always enforces string)
         return self.respond_and_record(
-            query=query,
-            response=response,
+            query=clean_query,
+            response=resp,
             image_path=image_path
         )

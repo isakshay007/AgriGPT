@@ -1,7 +1,7 @@
 # backend/routes/health_router.py
 
 from fastapi import APIRouter
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 
 from backend.core.config import settings
@@ -12,38 +12,45 @@ router = APIRouter(prefix="/health", tags=["Health"])
 START_TIME = time.time()
 
 
+def _format_uptime(seconds: int) -> str:
+    """Convert seconds to HH:MM:SS."""
+    return str(timedelta(seconds=seconds))
+
+
 @router.get("/")
 async def health_check():
     """
-    Health check endpoint with REAL Groq connectivity test.
+    OpenAPI-safe health check.
+    EVERYTHING must be pure strings, ints, or bools.
+    No tuples, no complex objects.
     """
 
     uptime_sec = int(time.time() - START_TIME)
 
-    # ---------------------------------------------------
-    # Real-time GROQ API test
-    # ---------------------------------------------------
+    # GROQ status
     try:
         llm = get_llm()
-
-        # Send a tiny message to confirm the API actually works
-        _ = llm.invoke("ping")   # <-- REAL API CALL
-
-        groq_status = "reachable"
+        model_ok = bool(settings.TEXT_MODEL_NAME) and bool(settings.GROQ_API_KEY)
+        groq_status = "configured" if model_ok else "not_configured"
     except Exception as e:
-        groq_status = f"unreachable: {str(e)}"
+        groq_status = f"error: {str(e)}"
 
+    # MAKE EVERYTHING A STRING — this prevents $ref OpenAPI crash
     return {
         "status": "OK",
         "service": "AgriGPT Backend",
-        "timestamp": datetime.utcnow().isoformat(),
-        "uptime_seconds": uptime_sec,
+        "timestamp_utc": str(datetime.utcnow().isoformat()),
+        "uptime_seconds": int(uptime_sec),
+        "uptime_hhmmss": str(_format_uptime(uptime_sec)),
+
         "models": {
-            "text_model": settings.TEXT_MODEL_NAME,
-            "vision_model": settings.VISION_MODEL_NAME,
+            "text_model": str(settings.TEXT_MODEL_NAME or ""),
+            "vision_model": str(settings.VISION_MODEL_NAME or ""),
         },
+
         "dependencies": {
-            "groq_api": groq_status
+            "groq_api": str(groq_status),
         },
-        "message": "AgriGPT backend is alive 🚜"
+
+        "notes": "Health OK",
     }

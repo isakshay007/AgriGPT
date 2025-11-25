@@ -1,19 +1,15 @@
 # backend/services/vision_service.py
 """
-Vision Service (Unified & Production-Safe)
-------------------------------------------
-Fixes:
-- Retry logic for 429/500 Groq failures
-- Timeout protection
-- Consistent temperature + max_tokens
-- Sanitized inputs (Tamil/emojis safe)
-- Validation for unsupported formats
-- Normalized output formatting
+FINAL Vision Service – Python 3.13 Safe
+---------------------------------------
+- Removes deprecated imghdr
+- Uses magic-byte detection (PNG/JPEG only)
+- Always returns pure string (OpenAPI safe)
+- No dictionary or list output EVER
 """
 
 from __future__ import annotations
 import base64
-import imghdr
 import os
 import time
 
@@ -21,76 +17,84 @@ from groq import Groq
 from backend.core.config import settings
 
 MAX_RETRIES = 3
-BACKOFF = [1, 2, 4]   # exponential retry delays
+BACKOFF = [1, 2, 4]   # retry delays
 
 
 # ---------------------------------------------------------
-# Utility: Image MIME Detection
+# MIME Detection (No imghdr, Python 3.13 safe)
 # ---------------------------------------------------------
 def _detect_mime(image_path: str) -> str:
-    detected = imghdr.what(image_path)
+    """
+    Detect PNG / JPEG using magic bytes.
+    No imghdr (removed in Python 3.13).
+    """
+    try:
+        with open(image_path, "rb") as f:
+            header = f.read(10)
+    except Exception:
+        return "unknown"
 
-    if detected == "png":
+    # PNG magic bytes: 89 50 4E 47
+    if header.startswith(b"\x89PNG"):
         return "image/png"
-    if detected in ("jpeg", "jpg"):
+
+    # JPEG magic bytes: FF D8
+    if header.startswith(b"\xFF\xD8"):
         return "image/jpeg"
 
-    # Unsupported images (HEIC, WEBP, GIF, etc.)
-    supported = ["png", "jpeg", "jpg"]
-    if detected not in supported:
-        raise ValueError(
-            f"Unsupported image format '{detected}'. Please upload PNG or JPG."
-        )
-
-    return "image/jpeg"
+    return "unknown"
 
 
 # ---------------------------------------------------------
-# Utility: Flatten Output
+# Normalize response to ALWAYS string
 # ---------------------------------------------------------
-def _normalize_output(o):
+def _normalize_output(o) -> str:
+    if not o:
+        return ""
+
     if isinstance(o, str):
         return o.strip()
 
+    # Lists → join lines
     if isinstance(o, list):
-        return "\n".join(_normalize_output(x) for x in o)
+        try:
+            return "\n".join(_normalize_output(x) for x in o)
+        except:
+            return str(o)
 
+    # Dict → flatten
     if isinstance(o, dict):
-        return "\n".join(f"{k}: {v}" for k, v in o.items())
+        try:
+            return "\n".join(f"{k}: {v}" for k, v in o.items())
+        except:
+            return str(o)
 
     return str(o).strip()
 
 
 # ---------------------------------------------------------
-# Vision Query Function
+# MAIN VISION FUNCTION (SAFE)
 # ---------------------------------------------------------
 def query_groq_image(image_path: str, prompt: str) -> str:
     """
-    Robust image+prompt call to Groq Vision with:
-    - sanitization
-    - retries
-    - validation
-    - consistent model settings
+    Always returns a clean string — never dict/list.
+    Works with Python 3.13 (no imghdr).
     """
 
-    # Validate file exists
+    # Validate file existence
     if not os.path.exists(image_path):
         return "Error: Image file does not exist."
 
-    # File size guard (8MB max)
+    # Validate file size
     if os.path.getsize(image_path) > 8 * 1024 * 1024:
-        return "Error: Image too large. Please upload an image smaller than 8 MB."
+        return "Error: Image too large (max 8MB)."
 
-    # Validate MIME
-    try:
-        mime = _detect_mime(image_path)
-    except ValueError as e:
-        return str(e)
+    # Detect MIME type
+    mime = _detect_mime(image_path)
+    if mime not in ("image/png", "image/jpeg"):
+        return "Unsupported image format. Please upload PNG or JPG."
 
-    # Clean prompt (Tamil/emojis_safe)
-    prompt = prompt.strip() if isinstance(prompt, str) else ""
-
-    # Read & encode image
+    # Load bytes
     try:
         with open(image_path, "rb") as f:
             raw = f.read()
@@ -100,15 +104,16 @@ def query_groq_image(image_path: str, prompt: str) -> str:
     if not raw:
         return "Error: Image file is empty."
 
+    # Base64 encode
     b64 = base64.b64encode(raw).decode("utf-8")
-    image_data_url = f"data:{mime};base64,{b64}"
+    image_url = f"data:{mime};base64,{b64}"
 
     # Retry loop
     for attempt in range(MAX_RETRIES):
         try:
             client = Groq(
                 api_key=settings.GROQ_API_KEY,
-                timeout=30  # timeout safeguard
+                timeout=30,
             )
 
             completion = client.chat.completions.create(
@@ -116,35 +121,30 @@ def query_groq_image(image_path: str, prompt: str) -> str:
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are AgriGPT Vision, an expert crop disease classifier."
+                        "content": (
+                            "You are AgriGPT Vision, an expert crop disease classifier."
+                        ),
                     },
                     {
                         "role": "user",
                         "content": [
-                            {"type": "text", "text": prompt},
-                            {
-                                "type": "image_url",
-                                "image_url": {"url": image_data_url},
-                            },
+                            {"type": "text", "text": prompt.strip()},
+                            {"type": "image_url", "image_url": {"url": image_url}},
                         ],
                     },
                 ],
-                temperature=0.4,
                 max_tokens=900,
+                temperature=0.4,
                 top_p=1.0,
-                stream=False,
             )
 
-            msg = (
-                completion.choices[0].message.content
-                if completion
-                   and completion.choices
-                   and completion.choices[0].message
-                   and completion.choices[0].message.content
-                else None
-            )
+            msg = ""
+            try:
+                msg = completion.choices[0].message.content
+            except:
+                msg = "Could not analyze the image."
 
-            return _normalize_output(msg) or "I could not analyze the image."
+            return _normalize_output(msg)
 
         except Exception as e:
             if attempt < MAX_RETRIES - 1:
