@@ -2,6 +2,8 @@ import { ChatMessage } from "@/store/chatStore";
 import { User, Bot } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface ChatBubbleProps {
   message: ChatMessage;
@@ -40,7 +42,7 @@ const ChatBubble = ({ message }: ChatBubbleProps) => {
       >
         <div
           className={cn(
-            "rounded-2xl px-4 py-3 shadow-md whitespace-pre-wrap break-words",
+            "rounded-2xl px-4 py-3 shadow-md break-words overflow-hidden",
             isUser
               ? "bg-primary text-primary-foreground rounded-tr-sm"
               : "bg-card text-card-foreground border border-border rounded-tl-sm"
@@ -55,36 +57,45 @@ const ChatBubble = ({ message }: ChatBubbleProps) => {
             />
           )}
 
-          {/* Text content with formatting */}
-          <div className="space-y-1">
-            {message.content.split("\n").map((line, i) => {
-              const trimmed = line.trim();
-
-              // Bullet list
-              if (trimmed.startsWith("•") || trimmed.startsWith("-")) {
-                return (
-                  <div key={i} className="ml-3">
-                    {line}
-                  </div>
-                );
-              }
-
-              // Section header (ends with :)
-              if (trimmed.endsWith(":") && trimmed.length < 50) {
-                return (
-                  <div key={i} className="font-semibold mt-2">
-                    {line}
-                  </div>
-                );
-              }
-
-              return <div key={i}>{line || "\u00A0"}</div>;
-            })}
-          </div>
+          {/* Markdown Content */}
+          {message.content && (
+            <div
+              className={cn(
+                "prose prose-sm max-w-none leading-relaxed",
+                // Inverse prose colors for user bubble (primary bg)
+                isUser
+                  ? "prose-invert text-primary-foreground"
+                  : "dark:prose-invert text-card-foreground"
+              )}
+            >
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  // Override link behavior to open in new tab
+                  a: ({ node, ...props }) => (
+                    <a {...props} target="_blank" rel="noopener noreferrer" className="underline font-medium" />
+                  ),
+                  // Style paragraphs
+                  p: ({ node, ...props }) => (
+                     <p {...props} className="mb-2 last:mb-0" />
+                  ),
+                  // Style lists
+                  ul: ({ node, ...props }) => (
+                    <ul {...props} className="list-disc pl-4 mb-2" />
+                  ),
+                  ol: ({ node, ...props }) => (
+                    <ol {...props} className="list-decimal pl-4 mb-2" />
+                  ),
+                }}
+              >
+                {message.content}
+              </ReactMarkdown>
+            </div>
+          )}
 
           {/* Agent tag (assistant messages only) */}
           {message.agent && (
-            <div className="text-xs mt-2 opacity-60">
+            <div className="text-xs mt-2 opacity-60 pt-2 border-t border-border/20">
               Agent: {message.agent}
             </div>
           )}

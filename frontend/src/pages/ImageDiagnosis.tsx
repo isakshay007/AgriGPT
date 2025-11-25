@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { askImage } from "@/api/agriApi";
 import Loader from "@/components/Loader";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const ImageDiagnosis = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -133,25 +135,28 @@ const ImageDiagnosis = () => {
 
               {result && !isLoading && (
                 <div className="bg-card border border-border rounded-lg p-6 space-y-3">
-                  <h3 className="text-lg font-bold text-foreground">Diagnosis Result</h3>
-                  <div className="text-card-foreground whitespace-pre-wrap">
-                    {result.split("\n").map((line, i) => {
-                      if (line.trim().startsWith("•") || line.trim().startsWith("-")) {
-                        return (
-                          <div key={i} className="ml-2 mb-1">
-                            {line}
-                          </div>
-                        );
-                      }
-                      if (line.trim().endsWith(":") && line.trim().length < 50) {
-                        return (
-                          <div key={i} className="font-semibold mt-3 mb-1">
-                            {line}
-                          </div>
-                        );
-                      }
-                      return <div key={i}>{line || "\u00A0"}</div>;
-                    })}
+                  <h3 className="text-lg font-bold text-foreground mb-4">Diagnosis Result</h3>
+                  
+                  {/* Render formatted Markdown */}
+                  <div className="prose dark:prose-invert max-w-none text-card-foreground">
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        // Override link behavior to open in new tab
+                        a: ({ node, ...props }) => (
+                          <a {...props} target="_blank" rel="noopener noreferrer" className="underline font-medium" />
+                        ),
+                        // Style lists
+                        ul: ({ node, ...props }) => (
+                          <ul {...props} className="list-disc pl-4 mb-2" />
+                        ),
+                        ol: ({ node, ...props }) => (
+                          <ol {...props} className="list-decimal pl-4 mb-2" />
+                        ),
+                      }}
+                    >
+                      {result}
+                    </ReactMarkdown>
                   </div>
 
                   <Button onClick={removeImage} variant="outline" className="w-full mt-4">
