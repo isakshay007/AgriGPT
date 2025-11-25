@@ -69,7 +69,8 @@ const ImageDiagnosis = () => {
     try {
       setIsLoading(true);
       const response = await askImage(selectedImage);
-      setResult(response.response);
+      // In our updated API, the analysis is in `analysis`, not `response`.
+      setResult(response.analysis); 
       toast.success("Diagnosis complete");
     } catch (error: any) {
       console.error("Diagnosis error:", error);

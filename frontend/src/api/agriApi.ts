@@ -64,17 +64,26 @@ export const askText = (query: string): Promise<ApiResponse> =>
 
 /**  Image-only diagnosis */
 export const askImage = (image: File): Promise<ApiResponse> =>
-  postFormData("/ask/image", buildFormData({ image }));
+  postFormData("/ask/image", buildFormData({ file: image }));
 
 /**  Multimodal: text + image */
 export const askChat = (
   query: string,
   image?: File
 ): Promise<ApiResponse> => {
+  // If image is present, we use the /ask/chat multimodal endpoint
+  if (image) {
+    const payload = buildFormData({
+      query: query.trim(),
+      file: image, // Backend expects 'file', not 'image'
+    });
+    return postFormData("/ask/chat", payload);
+  } 
+  
+  // If no image, use text-only endpoint (or chat endpoint with just query)
+  // Let's use /ask/chat for consistency if it handles text-only too (it does)
   const payload = buildFormData({
-    query: query.trim(),
-    image,
+    query: query.trim()
   });
-
   return postFormData("/ask/chat", payload);
 };
