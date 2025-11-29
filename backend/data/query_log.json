@@ -290,5 +290,119 @@
     "response": "Wheat Yield and Discoloration Issues\n\n\u2022 Wheat yields vary greatly depending on region, soil, and climate.\n\u2022 Common issues limiting wheat yields include soil fertility gaps, water stress, planting time, seed quality, pest pressure, and climate stress.\n\u2022 The whitish color on wheat could be a sign of stress or disease.\n\n\u2022 Soil fertility gaps, such as lack of nitrogen or other essential nutrients, can limit wheat yields.\n\u2022 Water stress, either too little or too much, can impact wheat yields.\n\u2022 Planting time and synchronization with climate conditions are crucial for optimal yields.\n\u2022 Seed quality and germination rates can affect wheat yields.\n\u2022 Pest pressure, such as insects or diseases, can limit wheat yields.\n\u2022 Climate stress, like extreme temperatures or drought, can impact wheat yields.\n\nTo better understand the issue, consider:\n\u2022 Soil testing to check for nutrient deficiencies or pH imbalances.\n\u2022 Irrigation review to ensure the right amount of water at the right times.\n\u2022 Pest and disease inspection to scout for signs of pests or diseases.\n\u2022 Checking planting and growth stages to verify alignment with regional climate conditions.\n\nOne-line summary: Low-yielding wheat with whitish discoloration may be caused by factors like soil fertility gaps, water stress, or pest pressure, and requires further investigation.",
     "type": "text",
     "meta": "{'routing_mode': 'multi_agent', 'agents': [{'agent': 'YieldAgent', 'role': 'primary'}, {'agent': 'PestAgent', 'role': 'supporting'}, {'agent': 'CropAgent', 'role': 'supporting'}], 'agent_count': 3}"
+  },
+  {
+    "timestamp": "2025-11-29T00:01:16.145467",
+    "agent": "PestAgent",
+    "query": "Image-based symptom observation",
+    "response": "The image shows a leaf with several visible issues:\n* Large brown spots with concentric rings\n* Yellowing and green discoloration on the leaf\n* Small holes and dark spots scattered across the leaf\n* Some areas of the leaf appear to be damaged or chewed \n\nThe image quality is clear enough to observe these details.",
+    "type": "multimodal",
+    "image_path": "/var/folders/4g/j_hxt8xn5r3cgzqh9kc9j_nh0000gn/T/tmptqqe0cdn.jpg"
+  },
+  {
+    "timestamp": "2025-11-29T00:01:16.622857",
+    "agent": "FormatterAgent",
+    "query": "",
+    "response": "Tomato Leaf Issues\n\n\u2022 Large brown spots with concentric rings are visible on the leaf.\n\u2022 The leaf shows yellowing and green discoloration.\n\u2022 Small holes and dark spots are scattered across the leaf.\n\u2022 Some areas of the leaf appear damaged or chewed.\n\nThe image shows a tomato leaf with visible damage and disease symptoms.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2025-11-29T17:20:01.184211",
+    "agent": "PestAgent",
+    "query": "Image-based symptom observation",
+    "response": "The image shows a leaf with the following visible characteristics:\n\n* The leaf is primarily green with yellow patches.\n* There are numerous brown spots on the leaf, some of which have concentric rings.\n* Some areas of the leaf have holes or are torn.\n* The leaf appears to have some wilting or deformation. \n\nThe image quality is clear enough to observe these details.",
+    "type": "multimodal",
+    "image_path": "/var/folders/4g/j_hxt8xn5r3cgzqh9kc9j_nh0000gn/T/tmpuggjqlcz.jpg"
+  },
+  {
+    "timestamp": "2025-11-29T17:20:02.097352",
+    "agent": "CropAgent",
+    "query": "Why is this happening to my tomato plant",
+    "response": "To address the issue with your tomato plant, let's consider a few key aspects. First, ensure your soil is well-prepared before planting, with a pH between 6.0 and 6.8, which is suitable for tomatoes. Adding compost or well-rotted manure can improve soil fertility and structure.\n\nCheck if your tomato plant is receiving adequate sunlight, at least 6-8 hours a day, and if the soil is consistently moist but not waterlogged. \n\nFor fertilization, a balanced fertilizer like NPK 10-10-10 can be applied at planting time. Side-dress with a high-phosphorus fertilizer, like NPK 10-20-10, when the plant starts flowering to promote fruiting. However, without knowing the specific nutrient deficiency or soil condition, it's hard to give an exact dosage. A general guideline is to follow the product's instructions and consider soil test results for precise nutrient needs.\n\nIf you haven't already, mulch around the plants to retain moisture and control weeds. Keep the area around your tomato plants weed-free to prevent competition for nutrients.\n\nPrune your tomato plant to promote air circulation and prevent disease, removing lower leaves and any weak growth.\n\nIf the problem persists, consider consulting local agricultural extension services for more specific guidance tailored to your region and conditions.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2025-11-29T17:20:02.907082",
+    "agent": "FormatterAgent",
+    "query": "Why is this happening to my tomato plant",
+    "response": "Tomato Plant Leaf Issues\n\n\u2022 The leaf is primarily green with yellow patches.\n\u2022 There are numerous brown spots on the leaf, some of which have concentric rings.\n\u2022 Some areas of the leaf have holes or are torn.\n\u2022 The leaf appears to have some wilting or deformation.\n\u2022 Ensure soil pH is between 6.0 and 6.8.\n\u2022 Provide 6-8 hours of sunlight daily.\n\u2022 Keep soil consistently moist but not waterlogged.\n\u2022 Apply balanced fertilizer NPK 10-10-10 at planting time.\n\u2022 Side-dress with high-phosphorus fertilizer NPK 10-20-10 when flowering.\n\u2022 Mulch around plants to retain moisture and control weeds.\n\u2022 Keep the area weed-free to prevent nutrient competition.\n\u2022 Prune to promote air circulation and prevent disease.\n\nTomato plant leaf issues may be due to pests or diseases, requiring further inspection and possible consultation with local agricultural services.",
+    "type": "text",
+    "meta": "{'routing_mode': 'multimodal', 'agents': [{'agent': 'PestAgent', 'role': 'primary'}, {'agent': 'CropAgent', 'role': 'supporting'}], 'agent_count': 2}"
+  },
+  {
+    "timestamp": "2025-11-29T17:20:18.886726",
+    "agent": "CropAgent",
+    "query": "But why is it happening",
+    "response": "To address your concern, more details about the issue you're facing are needed, such as the type of crop you're growing, the stage of growth, and any specific symptoms you've observed. Generally, if you're noticing issues with your crop, it could be related to nutrient deficiencies, soil conditions, or growth stage care.\n\nCheck your soil preparation steps; ensure it includes proper tilling and organic matter incorporation if needed. For fertilizer planning, consider a balanced approach: apply NPK or a similar balanced fertilizer at recommended dosages, usually around 100-200 kg per hectare for many crops, but this can vary.\n\nIf you suspect a nutrient deficiency, consider getting a soil test done. Based on common issues, applying a mid-season top dressing of urea or ammonium sulfate can help with nitrogen deficiencies. For phosphorus and potassium, use rock phosphate or potassium sulfate as per soil test recommendations.\n\nEnsure your crop is receiving adequate care during its growth stages. This includes proper spacing, weeding, and support for plants that need it. If the problem persists, consider consulting local agricultural extension services for more specific guidance tailored to your region and crop.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2025-11-29T17:20:19.760326",
+    "agent": "FormatterAgent",
+    "query": "But why is it happening",
+    "response": "Addressing Crop Growth Concerns\n\n\u2022 To identify the issue with your crop, consider factors such as the type of crop, growth stage, and specific symptoms.\n\u2022 Check your soil preparation steps, including proper tilling and organic matter incorporation if needed.\n\u2022 For fertilizer planning, apply a balanced fertilizer like NPK at recommended dosages, usually around 100-200 kg per hectare.\n\u2022 If a nutrient deficiency is suspected, consider getting a soil test done to determine the specific needs.\n\u2022 Apply a mid-season top dressing of urea or ammonium sulfate for nitrogen deficiencies, and rock phosphate or potassium sulfate for phosphorus and potassium as per soil test recommendations.\n\u2022 Ensure proper care during growth stages, including spacing, weeding, and support for plants that need it.\n\u2022 If the problem persists, consult local agricultural extension services for tailored guidance.\n\nOne-line summary: Check soil preparation, balanced fertilization, and growth stage care to address crop growth concerns.",
+    "type": "text",
+    "meta": "{'routing_mode': 'text_only', 'agents': [{'agent': 'CropAgent', 'role': 'primary'}], 'agent_count': 1}"
+  },
+  {
+    "timestamp": "2025-11-29T17:23:35.141874",
+    "agent": "PestAgent",
+    "query": "Image-based symptom observation",
+    "response": "The image shows a leaf with the following visible characteristics:\n\n* The leaf is primarily green with yellow patches.\n* There are numerous brown spots with concentric rings on the leaf.\n* Some areas of the leaf have holes or are torn.\n* The leaf appears to have some discoloration and damage.",
+    "type": "multimodal",
+    "image_path": "/var/folders/4g/j_hxt8xn5r3cgzqh9kc9j_nh0000gn/T/tmpa21wd_to.jpg"
+  },
+  {
+    "timestamp": "2025-11-29T17:23:35.984374",
+    "agent": "CropAgent",
+    "query": "What is this and how can I prevent these issues in my tomato plant",
+    "response": "To address issues with your tomato plant, let's focus on general best practices for healthy growth. Ensure your soil is well-prepared before planting, with a pH between 6.0 and 6.8. Adding compost or well-rotted manure can improve soil fertility and structure. \n\nFor fertilization, consider a balanced NPK fertilizer. A general dosage could be 100-150 kg NPK per hectare, but this may vary based on soil test results and specific crop needs. You can also side-dress with calcium nitrate or crushed eggshells to prevent blossom end rot.\n\nKeep the soil consistently moist, but not waterlogged. Mulching around plants can help retain moisture and suppress weeds. \n\nPrune your tomato plant to promote air circulation and prevent disease. Remove lower leaves and any weak or damaged growth. \n\nSupport your plants with tomato cages, trellises, or stakes to keep them upright and encourage even fruiting. \n\nMonitor your plant regularly and adjust these practices as needed based on its response. If issues persist, consider consulting local agricultural resources for more specific guidance tailored to your region and conditions.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2025-11-29T17:23:36.864284",
+    "agent": "FormatterAgent",
+    "query": "What is this and how can I prevent these issues in my tomato plant",
+    "response": "Tomato Plant Health Issues\n\n\u2022 The leaf is primarily green with yellow patches.\n\u2022 There are numerous brown spots with concentric rings on the leaf.\n\u2022 Some areas of the leaf have holes or are torn.\n\u2022 The leaf appears to have some discoloration and damage.\n\u2022 Ensure your soil is well-prepared before planting, with a pH between 6.0 and 6.8.\n\u2022 Adding compost or well-rotted manure can improve soil fertility and structure.\n\u2022 Consider a balanced NPK fertilizer, with a general dosage of 100-150 kg NPK per hectare.\n\u2022 Side-dress with calcium nitrate or crushed eggshells to prevent blossom end rot.\n\u2022 Keep the soil consistently moist, but not waterlogged.\n\u2022 Mulch around plants to retain moisture and suppress weeds.\n\u2022 Prune your tomato plant to promote air circulation and prevent disease.\n\u2022 Remove lower leaves and any weak or damaged growth.\n\u2022 Support your plants with tomato cages, trellises, or stakes.\n\nRegular monitoring and proper care can help prevent issues with your tomato plant.",
+    "type": "text",
+    "meta": "{'routing_mode': 'multimodal', 'agents': [{'agent': 'PestAgent', 'role': 'primary'}, {'agent': 'CropAgent', 'role': 'supporting'}], 'agent_count': 2}"
+  },
+  {
+    "timestamp": "2025-11-29T17:24:48.305386",
+    "agent": "CropAgent",
+    "query": "Okay but what is the problem?",
+    "response": "To provide guidance, I need more details about your crop. What type of crop are you growing and at what stage is it currently? Also, what's your soil type and region?",
+    "type": "text"
+  },
+  {
+    "timestamp": "2025-11-29T17:24:48.785596",
+    "agent": "FormatterAgent",
+    "query": "Okay but what is the problem?",
+    "response": "Crop Guidance Requirements\n\u2022 To provide guidance, I need more details about your crop.\n\u2022 What type of crop are you growing?\n\u2022 At what stage is it currently?\n\u2022 What's your soil type?\n\u2022 What's your region?\n\nOne-line summary: Providing guidance requires details about crop type, growth stage, soil type, and region.",
+    "type": "text",
+    "meta": "{'routing_mode': 'text_only', 'agents': [{'agent': 'CropAgent', 'role': 'primary'}], 'agent_count': 1}"
+  },
+  {
+    "timestamp": "2025-11-29T17:30:26.080389",
+    "agent": "PestAgent",
+    "query": "Image-based symptom observation",
+    "response": "## Description of Symptoms\n\n* The leaf shows **brown, concentric, ring-like spots** with yellow haloes.\n* The spots are **irregularly shaped** and **vary in size**.\n* Some spots have **merged**, forming larger lesions.\n* The leaf has **yellowing** and **wilting** in the affected areas.\n* There are **small, dark spots** scattered across the leaf.\n\n## Likely Issue\n\n* The symptoms suggest a **fungal infection**, possibly **Septoria leaf spot** or similar.\n\n## Severity\n\n* The severity appears to be **moderate to severe**, with significant damage to the leaf.",
+    "type": "multimodal",
+    "image_path": "/var/folders/4g/j_hxt8xn5r3cgzqh9kc9j_nh0000gn/T/tmpb8y_90yp.jpg"
+  },
+  {
+    "timestamp": "2025-11-29T17:30:26.931315",
+    "agent": "CropAgent",
+    "query": "What is the issue with my tomato plant and how do I prevent it",
+    "response": "To address the issue with your tomato plant, I need more information about the symptoms you're observing. However, I can provide general guidance on common issues and best practices for tomato cultivation. \n\nEnsure your tomato plants receive adequate sunlight, at least 6-8 hours a day, and maintain a consistent watering schedule, avoiding overwatering which can lead to root rot and other problems. \n\nFor fertilization, a balanced fertilizer such as NPK 10-10-10 can be applied, typically at a rate of 1-2 cups per 100 square feet, but this may vary based on soil test results and specific crop needs. Side-dressing with calcium nitrate or crushed eggshells can help prevent blossom-end rot.\n\nSoil preparation is key; incorporate organic matter like compost or well-rotted manure to improve soil structure and fertility. \n\nIf you're experiencing specific issues like yellowing leaves, stunted growth, or fruit problems, it would be helpful to know more details. Generally, ensure good air circulation around plants and consider pruning to promote healthy growth. \n\nKeep in mind, local conditions such as soil type and climate can significantly affect crop management strategies. For precise advice, consulting a local agricultural extension or a soil testing service may provide more targeted guidance.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2025-11-29T17:30:28.232834",
+    "agent": "FormatterAgent",
+    "query": "What is the issue with my tomato plant and how do I prevent it",
+    "response": "# Tomato Plant Issue: Fungal Infection Likely\n\n**Summary**: Your tomato plant is likely suffering from a fungal infection, possibly Septoria leaf spot, characterized by brown, concentric, ring-like spots with yellow haloes on the leaves. To address this, we need to take steps to manage the infection and prevent its spread.\n\n### Analysis\nThe symptoms you've described, including **brown, concentric, ring-like spots** with yellow haloes, **irregularly shaped** and varying in size, some of which have **merged** to form larger lesions, along with **yellowing** and **wilting** in the affected areas, and **small, dark spots** scattered across the leaf, point towards a fungal infection. This is likely **Septoria leaf spot** or a similar condition. The severity appears to be **moderate to severe**, with significant damage to the leaf.\n\n### Recommendations\nTo manage the issue with your tomato plant and prevent further problems:\n\n* **Improve Air Circulation**: Ensure there is good air circulation around your tomato plants to reduce the moisture that fungal infections thrive in.\n* **Adjust Watering**: Maintain a consistent watering schedule, avoiding overwatering which can exacerbate fungal growth and lead to other problems like root rot.\n* **Fertilization and Soil Care**: Use a balanced fertilizer like NPK 10-10-10, and consider incorporating organic matter like compost or well-rotted manure into your soil to improve its structure and fertility.\n* **Pruning**: Consider pruning affected leaves to prevent the spread of the infection and promote healthy growth.\n* **Local Guidance**: For precise advice tailored to your local conditions, such as soil type and climate, consult a local agricultural extension or a soil testing service.\n\nBy taking these steps, you can help manage the fungal infection affecting your tomato plant and take preventive measures to ensure the health and productivity of your crop.",
+    "type": "text",
+    "meta": "{'routing_mode': 'multimodal', 'agents': [{'agent': 'PestAgent', 'role': 'primary'}, {'agent': 'CropAgent', 'role': 'supporting'}], 'agent_count': 2}"
   }
 ]

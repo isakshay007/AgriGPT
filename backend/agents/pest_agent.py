@@ -29,12 +29,12 @@ class PestAgent(AgriAgentBase):
         # --------------------------------------------------
         if image_path:
             vision_prompt = (
-                "You are AgriGPT Vision, an agricultural image observation assistant. "
-                "Describe only what is clearly visible in the image. "
-                "Allowed observations include leaf color changes, spots, holes, chewing damage, visible insects, mold, rot, wilting, or deformation. "
-                "Do not name specific pests or diseases unless unmistakably visible. "
-                "Do not guess causes, do not recommend chemicals, and do not infer crop stage or severity. "
-                "If the image is unclear or insufficient, say so clearly."
+                "You are AgriGPT Vision, an expert agricultural diagnostics assistant. "
+                "Analyze this crop image in detail. "
+                "1. DESCRIBE symptoms clearly (e.g., yellow halo, brown necrotic spots, white powdery coating). "
+                "2. IDENTIFY the likely issue (fungal, bacterial, pest, or nutrient) if visual evidence is strong. "
+                "3. ESTIMATE severity (mild, moderate, severe) based on visual extent. "
+                "Do not recommend chemical treatments yet. Focus on accurate diagnosis to help other agents provide the solution."
             )
 
             try:
@@ -55,14 +55,11 @@ class PestAgent(AgriAgentBase):
 
         text_prompt = (
             "You are AgriGPT PestAgent. "
-            "Analyze the farmer-described crop symptoms conservatively. "
-            "Do not give a definitive diagnosis and do not prescribe chemicals. "
-            "Do not override irrigation, nutrition, or crop management advice. "
-            "First summarize the main symptoms described by the farmer. "
-            "Then list two or three possible causes using conditional language only. "
-            "Suggest safe first-response actions such as monitoring, hygiene, mechanical removal, or low-risk organic practices. "
-            "Clearly state when expert field inspection or laboratory testing is required. "
-            "If symptoms may be caused by water stress or nutrient imbalance, say so explicitly. "
+            "Analyze the farmer's description of crop symptoms. "
+            "1. VALIDATE: Do these symptoms match known pests/diseases? "
+            "2. DIAGNOSE: List top 2-3 probable causes. "
+            "3. EXPLAIN: Why do these symptoms occur? "
+            "4. ADVISE: Immediate organic or cultural control steps. "
             f"Farmer description: {clean_query}"
         )
 

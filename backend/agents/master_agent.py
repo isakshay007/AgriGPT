@@ -40,24 +40,24 @@ def route_query(
 
     registry = get_agent_registry()
 
-    if query:
-        query = query.strip()
-
-    if query and len(query) > MAX_QUERY_CHARS:
+    # 1. Input Validation
+    clean_query = query.strip() if query else ""
+    
+    if clean_query and len(clean_query) > MAX_QUERY_CHARS:
         return "Your question is too long. Please shorten it."
 
-    # --------------------------------------------------------
-    # IMAGE → PestAgent ONLY
-    # --------------------------------------------------------
-    if image_path:
+    # ========================================================
+    # PATH A: IMAGE-ONLY (Direct Diagnosis)
+    # ========================================================
+    if image_path and not clean_query:
         pest_output = registry["PestAgent"].handle_query(
-            query=query or "",
+            query="",
             image_path=image_path,
         )
 
         payload = {
-            "user_query": query or "Image-based crop issue",
-            "routing_mode": "single_agent",
+            "user_query": "Image-based diagnosis",
+            "routing_mode": "image_only",
             "agent_results": [
                 {
                     "agent": "PestAgent",
@@ -68,39 +68,61 @@ def route_query(
             ],
         }
 
-        return registry["FormatterAgent"].handle_query(
-            json.dumps(payload, ensure_ascii=False)
-        )
+        return registry["FormatterAgent"].handle_query(payload) # Pass dict directly
 
-    if not query:
+    if not clean_query:
         return "Please ask an agriculture-related question."
 
-    # --------------------------------------------------------
-    # ✅ LLM SEMANTIC + SCORE-BASED ROUTING
-    # --------------------------------------------------------
-    routed = llm_route_with_scores(query, registry)
+    # ========================================================
+    # PATH B & C: TEXT-ONLY OR MULTIMODAL
+    # ========================================================
+    # 1. Semantic Routing (Text Intent)
+    routed = llm_route_with_scores(clean_query, registry)
 
-    # Hard fallback if router returns empty or low confidence
+    # 2. Fallback Logic
     if not routed:
         routed = [{"agent": "CropAgent", "role": "primary", "score": 0}]
 
-    # Ensure exactly ONE primary (the logic in llm_route_with_scores should handle this, but double check)
-    primary_exists = any(r["role"] == "primary" for r in routed)
-    if not primary_exists and routed:
+    # 3. Ensure Primary Exists
+    if not any(r["role"] == "primary" for r in routed):
         routed[0]["role"] = "primary"
 
-    agent_results: List[Dict[str, Any]] = []
+    # 4. Image Injection (Multimodal Only)
+    # If we have an image, PestAgent MUST be involved.
+    if image_path:
+        pest_in_route = any(r["agent"] == "PestAgent" for r in routed)
+        if not pest_in_route:
+            # Inject as Supporting
+            routed.append({
+                "agent": "PestAgent", 
+                "role": "supporting", 
+                "score": 100 
+            })
 
-    for item in routed[:MAX_ROUTED_AGENTS]:
+    # 5. Execution Loop
+    agent_results: List[Dict[str, Any]] = []
+    
+    # Limit execution count
+    final_execution_list = routed[:MAX_ROUTED_AGENTS]
+    
+    # Re-verify PestAgent presence if image exists (in case it was sliced off)
+    if image_path and not any(r["agent"] == "PestAgent" for r in final_execution_list):
+         # Force replace last agent with PestAgent
+         final_execution_list[-1] = {"agent": "PestAgent", "role": "supporting", "score": 100}
+
+    for item in final_execution_list:
         agent_name = item["agent"]
         role = item["role"]
         score = item.get("score", 0)
 
-        # Double check registry
         if agent_name not in registry:
             continue
 
-        output = registry[agent_name].handle_query(query=query)
+        # Pass image ONLY to PestAgent
+        if agent_name == "PestAgent" and image_path:
+            output = registry[agent_name].handle_query(query=clean_query, image_path=image_path)
+        else:
+            output = registry[agent_name].handle_query(query=clean_query)
 
         agent_results.append({
             "agent": agent_name,
@@ -109,16 +131,16 @@ def route_query(
             "content": output,
         })
 
+    # 6. Formatting
     payload = {
-        "user_query": query,
-        "routing_mode": "multi_agent" if len(agent_results) > 1 else "single_agent",
+        "user_query": clean_query,
+        "routing_mode": "multimodal" if image_path else "text_only",
         "agent_results": agent_results,
     }
 
-    # ✅ Formatter ALWAYS runs once
     formatted_response = registry["FormatterAgent"].handle_query(payload)
 
-    # ✅ Append Router Scores for visibility
+    # Log Router Confidence
     score_summary = ", ".join(
         f"{res['agent']}: {res['score']}" 
         for res in agent_results 
@@ -126,7 +148,7 @@ def route_query(
     )
     
     if score_summary:
-        formatted_response += f"\n\n**Router Confidence:** {score_summary}"
+        print(f"\n[ROUTER CONFIDENCE] {score_summary}\n")
 
     return formatted_response
 
@@ -231,7 +253,6 @@ OUTPUT FORMAT (JSON Array):
                  })
             else:
                  # Fallback: Low confidence on specific agents -> General CropAgent
-                 # But if the score is decent (e.g. 60), maybe we keep it? 
                  # If score < 75, we treat it as "General/Unsure" -> CropAgent.
                  # However, to be safe, let's include the best match if it's > 50, otherwise CropAgent.
                  if best_candidate["score"] >= 50:
@@ -252,9 +273,6 @@ OUTPUT FORMAT (JSON Array):
             
             # Threshold check for secondary
             if cand["score"] >= SECONDARY_SCORE_THRESHOLD:
-                # Assign role based on score gap or nature? 
-                # Simplified: secondary is 'supporting' or 'impact'.
-                # Let's default to 'supporting' for now.
                 final_routes.append({
                     "agent": cand["agent"], 
                     "role": "supporting", 
