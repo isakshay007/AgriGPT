@@ -1,5 +1,3 @@
-# backend/agents/agri_agent_base.py
-
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Optional
@@ -10,9 +8,7 @@ from backend.services.history_service import log_interaction
 class AgriAgentBase(ABC):
     name: str = "AgriAgentBase"
 
-    # --------------------------------------------------
     # Every agent must follow this signature
-    # --------------------------------------------------
     @abstractmethod
     def handle_query(
         self,
@@ -22,9 +18,7 @@ class AgriAgentBase(ABC):
     ) -> str:
         pass
 
-    # --------------------------------------------------
-    # Detect type for logging
-    # --------------------------------------------------
+
     @staticmethod
     def _normalize_query(q: Optional[str]) -> str:
         if q is None:
@@ -41,16 +35,14 @@ class AgriAgentBase(ABC):
             return "image"
         return "text"
 
-    # --------------------------------------------------
-    # ✅ ACTUAL LOGGING (META-AWARE)
-    # --------------------------------------------------
+    #  ACTUAL LOGGING
     def record(
         self,
         query,
         response,
         query_type,
         image_path=None,
-        meta: Optional[dict] = None,   # ✅ NEW
+        meta: Optional[dict] = None,   
     ):
         safe_response = str(response)
 
@@ -65,7 +57,6 @@ class AgriAgentBase(ABC):
         if image_path:
             entry["image_path"] = image_path
 
-        # ✅ Store routing / role metadata IF provided
         if meta:
             entry["meta"] = meta
 
@@ -74,15 +65,13 @@ class AgriAgentBase(ABC):
         except Exception:
             pass  # Never break execution because of logging
 
-    # --------------------------------------------------
-    # ✅ WRAPPER USED BY ALL AGENTS
-    # --------------------------------------------------
+
     def respond_and_record(
         self,
         query,
         response,
         image_path=None,
-        meta: Optional[dict] = None,   # ✅ NEW
+        meta: Optional[dict] = None,  
     ):
         query_type = self._detect_query_type(query, image_path)
         safe_response = str(response)

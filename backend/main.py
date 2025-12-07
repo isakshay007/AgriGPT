@@ -30,14 +30,14 @@ app.include_router(ask_router)
 @app.get("/")
 def root():
     return {
-        "message": "🌾 AgriGPT Backend running successfully",
+        "message": "AgriGPT Backend running successfully!",
         "endpoints": ["/ask/text", "/ask/image", "/ask/chat", "/health", "/docs"]
     }
 
 @app.on_event("startup")
 async def startup_event():
-    print("✅ AgriGPT Backend Started: Ready to accept queries")
+    print(" AgriGPT Backend Started: Ready to accept queries")
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    print("✅ AgriGPT Backend Shutting down")
+    print(" AgriGPT Backend Shutting down")

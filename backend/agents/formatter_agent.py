@@ -5,7 +5,7 @@ from backend.agents.agri_agent_base import AgriAgentBase
 
 class FormatterAgent(AgriAgentBase):
     """
-    FormatterAgent (PRODUCTION – GPT-OSS SAFE)
+    FormatterAgent
 
     Responsibilities:
     - Presentation only
@@ -16,14 +16,9 @@ class FormatterAgent(AgriAgentBase):
 
     name = "FormatterAgent"
 
-    # --------------------------------------------------
-    # PUBLIC ENTRYPOINT
-    # --------------------------------------------------
+
     def handle_query(self, payload: Any, image_path: str = None, chat_history: str = None) -> str:
 
-        # --------------------------------------------------
-        # FAILSAFE — plain string input
-        # --------------------------------------------------
         if isinstance(payload, str):
             clean_text = payload.strip()
             if not clean_text:
@@ -38,9 +33,6 @@ class FormatterAgent(AgriAgentBase):
                 meta=None,
             )
 
-        # --------------------------------------------------
-        # STRUCTURED PAYLOAD (EXPECTED PATH)
-        # --------------------------------------------------
         if not isinstance(payload, dict):
             return self.respond_and_record("", str(payload), image_path)
 
@@ -53,9 +45,6 @@ class FormatterAgent(AgriAgentBase):
                 user_query, "No agent responses were generated.", image_path
             )
 
-        # --------------------------------------------------
-        # DETERMINISTIC ROLE ORDER
-        # --------------------------------------------------
         role_priority = {
             "primary": 0,
             "supporting": 1,
@@ -69,9 +58,6 @@ class FormatterAgent(AgriAgentBase):
             ),
         )
 
-        # --------------------------------------------------
-        # BUILD ORDERED CONTENT BLOCKS
-        # --------------------------------------------------
         ordered_blocks: List[str] = []
         role_log: List[Dict[str, str]] = []
 
@@ -94,18 +80,12 @@ class FormatterAgent(AgriAgentBase):
                 user_query, "Agent responses were empty.", image_path
             )
 
-        # --------------------------------------------------
-        # LOG META (✅ THIS IS WHAT WAS MISSING)
-        # --------------------------------------------------
         meta = {
             "routing_mode": routing_mode,
             "agents": role_log,
             "agent_count": len(role_log),
         }
 
-        # --------------------------------------------------
-        # FORMAT USING LLM (PRESENTATION ONLY)
-        # --------------------------------------------------
         return self._format_text(
             user_query=user_query,
             ordered_blocks=ordered_blocks,
@@ -113,9 +93,6 @@ class FormatterAgent(AgriAgentBase):
             meta=meta,
         )
 
-    # ==================================================
-    # INTERNAL FORMATTER (SINGLE LLM CALL)
-    # ==================================================
     def _format_text(
         self,
         user_query: str,

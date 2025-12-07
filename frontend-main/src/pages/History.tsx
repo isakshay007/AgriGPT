@@ -8,10 +8,8 @@ import { cn } from "@/lib/utils";
 const History = () => {
   const { messages } = useChatStore();
 
-  /** Returns only the user messages in chronological order */
   const userMessages = messages.filter((m) => m.role === "user");
 
-  /** Detect message type */
   const getMessageType = (msg: typeof messages[0]) => {
     const hasText = msg.content && msg.content.trim() !== "";
     const hasImage = !!msg.imageUrl;
@@ -23,7 +21,6 @@ const History = () => {
     return { type: "Text", icon: MessageSquare, color: "text-primary", bg: "bg-primary/10" };
   };
 
-  /** Find assistant reply */
   const findAssistantReply = (userMsg: typeof messages[0]) => {
     return messages.find(
       (m) =>
@@ -39,7 +36,6 @@ const History = () => {
       className="min-h-[calc(100vh-8.5rem)] p-4 md:p-6"
     >
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,7 +54,6 @@ const History = () => {
           </p>
         </motion.div>
 
-        {/* Content */}
         {userMessages.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -103,7 +98,7 @@ const History = () => {
                 >
                   <Card className="p-4 hover:shadow-md transition-all duration-200 border-border/60 hover:border-primary/20">
                     <div className="flex gap-4">
-                      {/* Icon */}
+   
                       <div className={cn(
                         "flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center",
                         typeInfo.bg
@@ -111,7 +106,7 @@ const History = () => {
                         <Icon className={cn("w-5 h-5", typeInfo.color)} />
                       </div>
 
-                      {/* Content */}
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-2">
                           <span className={cn(
@@ -126,21 +121,21 @@ const History = () => {
                           </span>
                         </div>
 
-                        {/* User text */}
+    
                         {msg.content && (
                           <p className="text-sm font-medium text-foreground mb-2 line-clamp-2">
                             {msg.content}
                           </p>
                         )}
 
-                        {/* Assistant reply */}
+
                         {assistantReply && (
                           <p className="text-xs text-muted-foreground line-clamp-2 pl-3 border-l-2 border-primary/30">
                             {assistantReply.content}
                           </p>
                         )}
 
-                        {/* User image */}
+                \
                         {msg.imageUrl && (
                           <img
                             src={msg.imageUrl}

@@ -1,13 +1,3 @@
-# backend/services/vision_service.py
-"""
-FINAL Vision Service – Python 3.13 Safe
----------------------------------------
-- Uses meta-llama/llama-4-scout-17b-16e-instruct (native multimodal)
-- Magic-byte MIME detection (PNG/JPEG only)
-- OpenAPI-safe: ALWAYS returns plain string
-- Zero hallucination tolerance
-"""
-
 from __future__ import annotations
 import base64
 import os
@@ -17,18 +7,12 @@ from typing import Any
 from groq import Groq
 from backend.core.config import settings
 
-# ---------------------------------------------------------
-# Constants
-# ---------------------------------------------------------
+
 MAX_RETRIES = 3
 RETRY_BACKOFF = (1, 2, 4)
-MAX_IMAGE_BYTES = 8 * 1024 * 1024  # 8 MB
+MAX_IMAGE_BYTES = 8 * 1024 * 1024
 MAX_VISION_PROMPT_CHARS = 2000
 
-
-# ---------------------------------------------------------
-# MIME Detection (Python 3.13 safe)
-# ---------------------------------------------------------
 def _detect_mime(image_path: str) -> str:
     try:
         with open(image_path, "rb") as f:
@@ -45,9 +29,6 @@ def _detect_mime(image_path: str) -> str:
     return "unknown"
 
 
-# ---------------------------------------------------------
-# Normalize output to ALWAYS string
-# ---------------------------------------------------------
 def _normalize_output(output: Any) -> str:
     if output is None:
         return ""
@@ -60,12 +41,8 @@ def _normalize_output(output: Any) -> str:
     return str(output).strip()
 
 
-# ---------------------------------------------------------
-# MAIN VISION FUNCTION
-# ---------------------------------------------------------
 def query_groq_image(image_path: str, prompt: str) -> str:
 
-    # ---- File validation ---------------------------------
     if not image_path or not os.path.exists(image_path):
         return "The image file was not found."
 
@@ -85,24 +62,20 @@ def query_groq_image(image_path: str, prompt: str) -> str:
     if not raw_bytes:
         return "The image file appears to be empty."
 
-    # ---- Prompt safety -----------------------------------
     if not isinstance(prompt, str):
         prompt = ""
 
     if len(prompt) > MAX_VISION_PROMPT_CHARS:
         prompt = prompt[:MAX_VISION_PROMPT_CHARS] + " [Prompt truncated]"
 
-    # ---- Encode image ------------------------------------
     image_b64 = base64.b64encode(raw_bytes).decode("utf-8")
     image_url = f"data:{mime};base64,{image_b64}"
 
-    # ---- Client creation (no globals) --------------------
     client = Groq(
         api_key=settings.GROQ_API_KEY,
         timeout=30,
     )
 
-    # ---- Retry loop --------------------------------------
     for attempt in range(MAX_RETRIES):
         try:
             completion = client.chat.completions.create(

@@ -1,15 +1,6 @@
-"""
-OpenAPI-safe langchain_tools.py
---------------------------------
-NO global agent instances.
-Only pure data objects are allowed globally.
-Factories create agents on demand.
-"""
-
 from __future__ import annotations
 from typing import Dict, List, TypeAlias
 
-# Import agent classes (no instantiation)
 from backend.agents.crop_agent import CropAgent
 from backend.agents.irrigation_agent import IrrigationAgent
 from backend.agents.pest_agent import PestAgent
@@ -17,31 +8,14 @@ from backend.agents.subsidy_agent import SubsidyAgent
 from backend.agents.yield_agent import YieldAgent
 from backend.agents.formatter_agent import FormatterAgent
 
-
-# =========================================================
-# TYPES
-# =========================================================
 AgentRegistry: TypeAlias = Dict[str, object]
 
-
-# =========================================================
-# NON-ROUTABLE AGENTS
-# =========================================================
 # FormatterAgent must NEVER be selected by router
 NON_ROUTABLE_AGENTS = {"FormatterAgent"}
 
-
-# =========================================================
-# FACTORY: CREATE CLEAN AGENT INSTANCES
-# =========================================================
 def get_agent_registry() -> AgentRegistry:
     """
     Return a fresh registry on each call.
-
-    ✅ No global state
-    ✅ OpenAPI-safe
-    ✅ Works with FastAPI reload
-    ✅ Prevents stale agent memory
     """
     return {
         "CropAgent": CropAgent(),
@@ -52,10 +26,7 @@ def get_agent_registry() -> AgentRegistry:
         "FormatterAgent": FormatterAgent(),
     }
 
-
-# =========================================================
-# ROUTER METADATA (PURE DATA — SAFE)
-# =========================================================
+# ROUTER METADATA 
 AGENT_DESCRIPTIONS: List[dict] = [
     {
         "name": "CropAgent",

@@ -1,5 +1,3 @@
-# backend/agents/irrigation_agent.py
-
 from backend.services.text_service import query_groq_text
 from backend.agents.agri_agent_base import AgriAgentBase
 
@@ -14,9 +12,6 @@ class IrrigationAgent(AgriAgentBase):
 
     def handle_query(self, query: str = None, image_path: str = None, chat_history: str = None) -> str:
 
-        # --------------------------------------------------
-        # Input validation
-        # --------------------------------------------------
         if not query or not isinstance(query, str) or not query.strip():
             response = (
                 "Please ask an irrigation-related question.\n"
@@ -29,9 +24,7 @@ class IrrigationAgent(AgriAgentBase):
 
         clean_query = query.strip()
 
-        # --------------------------------------------------
-        # Irrigation prompt (STRICT)
-        # --------------------------------------------------
+        # Irrigation prompt 
         prompt = " ".join([
             "You are AgriGPT IrrigationAgent.",
             "ROLE: You are an irrigation and water management specialist.",
@@ -68,17 +61,12 @@ class IrrigationAgent(AgriAgentBase):
             "No formatting, no titles, no forced bullets."
         ])
 
-        # --------------------------------------------------
         # LLM call
-        # --------------------------------------------------
         try:
             resp = query_groq_text(prompt)
         except Exception:
             resp = "Irrigation advice could not be generated at this time."
 
-        # --------------------------------------------------
-        # Log + return
-        # --------------------------------------------------
         return self.respond_and_record(
             query=clean_query,
             response=resp,

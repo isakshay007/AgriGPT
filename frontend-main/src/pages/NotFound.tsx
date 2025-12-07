@@ -11,7 +11,7 @@ const NotFound = () => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center max-w-md"
       >
-        {/* Animated illustration */}
+
         <motion.div
           animate={{ 
             y: [0, -10, 0],
@@ -24,7 +24,7 @@ const NotFound = () => {
           }}
           className="text-8xl mb-8"
         >
-          🌾
+  
         </motion.div>
 
         <motion.h1

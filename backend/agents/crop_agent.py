@@ -1,5 +1,3 @@
-# backend/agents/crop_agent.py
-
 from backend.services.text_service import query_groq_text
 from backend.agents.agri_agent_base import AgriAgentBase
 
@@ -15,9 +13,6 @@ class CropAgent(AgriAgentBase):
 
     def handle_query(self, query: str = None, image_path: str = None, chat_history: str = None) -> str:
 
-        # --------------------------------------------------
-        # Input validation
-        # --------------------------------------------------
         if not query or not query.strip():
             response = (
                 "Please ask a crop management question.\n"
@@ -30,9 +25,7 @@ class CropAgent(AgriAgentBase):
 
         clean_query = query.strip()
 
-        # --------------------------------------------------
-        # Crop-specific prompt (STRICT)
-        # --------------------------------------------------
+        # Crop-specific prompt
         prompt = " ".join([
             "You are AgriGPT CropAgent.",
             "ROLE: You are a crop management specialist.",
@@ -53,18 +46,12 @@ class CropAgent(AgriAgentBase):
             "OUTPUT: Plain advisory text only. No formatting, no titles, no forced bullets."
         ])
 
-
-        # --------------------------------------------------
         # LLM call
-        # --------------------------------------------------
         try:
             resp = query_groq_text(prompt)
         except Exception as e:
             resp = "Crop advice could not be generated at this time."
 
-        # --------------------------------------------------
-        # Log + return
-        # --------------------------------------------------
         return self.respond_and_record(
             query=clean_query,
             response=resp,

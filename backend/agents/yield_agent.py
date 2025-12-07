@@ -1,5 +1,3 @@
-# backend/agents/yield_agent.py
-
 from backend.services.text_service import query_groq_text
 from backend.agents.agri_agent_base import AgriAgentBase
 

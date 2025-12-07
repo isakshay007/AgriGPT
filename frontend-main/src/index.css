@@ -2,52 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-/* =========================================
-   AgriGPT Design System - Enhanced
-   Agricultural-inspired, modern & clean
-========================================= */
 
 @layer base {
   :root {
-    /* Core backgrounds */
+
     --background: 45 30% 97%;
     --foreground: 150 25% 12%;
 
-    /* Cards & surfaces */
     --card: 0 0% 100%;
     --card-foreground: 150 25% 12%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 150 25% 12%;
 
-    /* Primary - Rich agricultural green */
     --primary: 145 63% 32%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Warm cream/sand */
     --secondary: 42 40% 92%;
     --secondary-foreground: 150 25% 12%;
 
-    /* Muted tones */
     --muted: 45 25% 93%;
     --muted-foreground: 150 15% 45%;
 
-    /* Accent - Golden harvest */
     --accent: 38 92% 50%;
     --accent-foreground: 150 25% 12%;
 
-    /* Destructive */
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Borders & inputs */
     --border: 45 20% 88%;
     --input: 45 25% 93%;
     --ring: 145 63% 32%;
 
     --radius: 1rem;
 
-    /* Extended palette */
     --farm-green: 145 63% 32%;
     --farm-green-light: 145 50% 92%;
     --farm-green-dark: 145 70% 22%;
@@ -58,18 +46,16 @@
     --farm-sky: 200 80% 55%;
     --farm-sun: 45 95% 60%;
 
-    /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(145 63% 32%) 0%, hsl(145 50% 45%) 100%);
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(45 30% 98%) 100%);
     --gradient-sky: linear-gradient(180deg, hsl(200 80% 85%) 0%, hsl(200 60% 95%) 100%);
 
-    /* Shadows */
+
     --shadow-sm: 0 1px 2px 0 hsl(145 20% 20% / 0.05);
     --shadow-md: 0 4px 6px -1px hsl(145 20% 20% / 0.08), 0 2px 4px -2px hsl(145 20% 20% / 0.05);
     --shadow-lg: 0 10px 15px -3px hsl(145 20% 20% / 0.08), 0 4px 6px -4px hsl(145 20% 20% / 0.05);
     --shadow-glow: 0 0 20px hsl(145 63% 32% / 0.15);
 
-    /* Sidebar */
     --sidebar-background: 45 30% 97%;
     --sidebar-foreground: 150 25% 12%;
     --sidebar-primary: 145 63% 32%;
@@ -137,7 +123,6 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -157,22 +142,19 @@
 }
 
 @layer components {
-  /* Glass effect */
+
   .glass {
     @apply bg-card/80 backdrop-blur-md border border-border/50;
   }
 
-  /* Gradient text */
   .gradient-text {
     @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
   }
 
-  /* Floating shadow */
   .float-shadow {
     box-shadow: var(--shadow-lg), var(--shadow-glow);
   }
 
-  /* Pulse ring animation for buttons */
   .pulse-ring {
     @apply relative;
   }
@@ -184,19 +166,17 @@
 }
 
 @layer utilities {
-  /* Animation delays */
+
   .animation-delay-100 { animation-delay: 100ms; }
   .animation-delay-200 { animation-delay: 200ms; }
   .animation-delay-300 { animation-delay: 300ms; }
   .animation-delay-400 { animation-delay: 400ms; }
   .animation-delay-500 { animation-delay: 500ms; }
 
-  /* Text balance */
   .text-balance {
     text-wrap: balance;
   }
 
-  /* Hide scrollbar */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;

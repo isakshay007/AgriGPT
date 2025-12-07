@@ -1,30 +1,11 @@
-# backend/services/text_service.py
-"""
-Unified Text Service (Production-Stable)
-----------------------------------------
-Guarantees:
-- Retry logic for Groq 429 / 5xx / network errors
-- Consistent system message behavior
-- Uses unified ChatGroq client
-- Safe prompt truncation
-- Always returns clean string output
-"""
-
 from __future__ import annotations
 import time
 from typing import Optional
 
 from backend.core.llm_client import get_llm
 
-# -------------------------------
-# Retry configuration
-# -------------------------------
 MAX_RETRIES = 3
 RETRY_BACKOFF = (1, 2, 4)
-
-# -------------------------------
-# Prompt safety limits
-# -------------------------------
 MAX_PROMPT_CHARS = 4000
 
 
@@ -41,7 +22,7 @@ def _normalize_output(output: Optional[str]) -> str:
 
 
 def _is_retryable_error(error: Exception) -> bool:
-    """Detect Groq / network errors that should be retried."""
+    """Detect network errors that should be retried."""
     msg = str(error).lower()
     return any(
         token in msg
@@ -75,17 +56,11 @@ def query_groq_text(
 ) -> str:
     """
     Primary text-generation entrypoint.
-
-    - Uses GPT-OSS-120B via Groq
-    - Always returns a safe string
     """
 
     if not isinstance(prompt, str) or not prompt.strip():
         return "No valid input was provided."
 
-    # --------------------------------------------------
-    # Enforce prompt length safety
-    # --------------------------------------------------
     if len(prompt) > MAX_PROMPT_CHARS:
         prompt = (
             prompt[:MAX_PROMPT_CHARS]

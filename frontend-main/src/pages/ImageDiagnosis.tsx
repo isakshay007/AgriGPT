@@ -16,7 +16,6 @@ const ImageDiagnosis = () => {
   const [result, setResult] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
-  /** Cleanup object URL on unmount */
   useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -77,7 +76,6 @@ const ImageDiagnosis = () => {
     );
   };
 
-  /** Diagnose handler - UNCHANGED core logic */
   const handleDiagnose = async () => {
     if (!selectedImage) {
       toast.error("Please select an image first");
@@ -104,7 +102,6 @@ const ImageDiagnosis = () => {
       className="min-h-[calc(100vh-8.5rem)] p-4 md:p-6"
     >
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -124,7 +121,6 @@ const ImageDiagnosis = () => {
           </p>
         </motion.div>
 
-        {/* Main card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -174,7 +170,7 @@ const ImageDiagnosis = () => {
                   exit={{ opacity: 0, scale: 0.95 }}
                   className="space-y-6"
                 >
-                  {/* Image preview */}
+    
                   <div className="relative group">
                     <motion.img
                       layoutId="cropImage"
@@ -192,7 +188,7 @@ const ImageDiagnosis = () => {
                     </motion.button>
                   </div>
 
-                  {/* Actions */}
+    
                   <AnimatePresence mode="wait">
                     {!result && !isLoading && (
                       <motion.div
@@ -268,7 +264,6 @@ const ImageDiagnosis = () => {
           </Card>
         </motion.div>
 
-        {/* Tips section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

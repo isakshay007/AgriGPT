@@ -1,5 +1,3 @@
-# backend/routes/ask_router.py
-
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, BackgroundTasks
 import tempfile
 import os
@@ -17,7 +15,7 @@ MAX_QUERY_CHARS = 2000
 @router.post("/text")
 async def ask_text(
     query: str = Form(...),
-    session_id: Optional[str] = Form(None) # ✅ NEW
+    session_id: Optional[str] = Form(None) 
 ):
     """Text-only farming query endpoint."""
     start = time.time()
@@ -49,7 +47,7 @@ async def ask_text(
 async def ask_image(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
-    session_id: Optional[str] = Form(None) # ✅ NEW
+    session_id: Optional[str] = Form(None) 
 ):
     """Image-only crop analysis endpoint."""
     start = time.time()
@@ -99,7 +97,7 @@ async def ask_chat(
     background_tasks: BackgroundTasks,
     query: str = Form(...),
     file: UploadFile = File(None),
-    session_id: Optional[str] = Form(None) # ✅ NEW
+    session_id: Optional[str] = Form(None) 
 ):
     """
     Multimodal endpoint: text + optional image.

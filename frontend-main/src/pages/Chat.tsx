@@ -23,7 +23,6 @@ const Chat = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  /** Smooth scroll to bottom */
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
@@ -32,7 +31,6 @@ const Chat = () => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  /** Core send logic - UNCHANGED from original */
   const handleSend = async (text: string, image?: File) => {
     try {
       setLoading(true);
@@ -125,7 +123,6 @@ const Chat = () => {
         </div>
       </div>
 
-      {/* Input area - fixed at bottom */}
       <ChatInput
         onSend={handleSend}
         isLoading={isLoading}

@@ -11,9 +11,7 @@ from langchain_core.documents import Document
 DATA_PATH = os.path.join(os.path.dirname(__file__), "../data/subsidies.json")
 VECTOR_DB_PATH = os.path.join(os.path.dirname(__file__), "../data/faiss_index")
 
-# -------------------------------
 # Query cleaning (FAISS-safe)
-# -------------------------------
 def _clean_query(text: str) -> str:
     if not isinstance(text, str):
         return ""
@@ -26,8 +24,6 @@ def _clean_query(text: str) -> str:
 class RAG:
     """
     RAG singleton for subsidy retrieval.
-    - OpenAPI-safe (returns plain dicts only)
-    - FAISS-backed
     """
 
     _instance = None
@@ -39,16 +35,13 @@ class RAG:
         return cls._instance
 
     def initialize(self):
-        # ✅ Slightly stronger embeddings (better semantic recall)
+        #  Slightly stronger embeddings (better semantic recall)
         self.embeddings = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L12-v2"
         )
 
         self.vector_store = None
 
-        # ---------------------------------------------------
-        # Attempt to load existing FAISS index
-        # ---------------------------------------------------
         if os.path.exists(VECTOR_DB_PATH):
             try:
                 print("[RAG] Loading existing FAISS index...")
@@ -68,9 +61,7 @@ class RAG:
                 except Exception:
                     pass
 
-        # ---------------------------------------------------
         # Build FAISS index from subsidies.json
-        # ---------------------------------------------------
         if not os.path.exists(DATA_PATH):
             print(f"[RAG] subsidies.json not found at: {DATA_PATH}")
             return
@@ -100,18 +91,12 @@ class RAG:
         self.vector_store.save_local(VECTOR_DB_PATH)
         print("[RAG] FAISS index built and saved.")
 
-    # ---------------------------------------------------
-    # Retrieval (OpenAPI-safe)
-    # ---------------------------------------------------
     def retrieve(self, query: str, k: int = 2) -> List[Dict[str, str]]:
-        """
-        ✅ Returns plain dicts only.
-        ✅ Applies similarity score threshold.
-        """
+
         if not query or not query.strip():
             return []
 
-        # ✅ Context-boosting for subsidy domain
+        #  Context-boosting for subsidy domain
         query_clean = _clean_query(query.strip() + " india agriculture subsidy")
 
         if not self.vector_store:
@@ -129,7 +114,7 @@ class RAG:
         results: List[Dict[str, str]] = []
 
         for doc, score in docs_with_scores:
-            # ✅ Distance threshold (tunable, conservative)
+            #  Distance threshold (tunable, conservative)
             if score > 0.7:
                 continue
 
@@ -147,5 +132,5 @@ class RAG:
         return results
 
 
-# ✅ Singleton instance
+#  Singleton instance
 rag_service = RAG()

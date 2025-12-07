@@ -1,5 +1,3 @@
-# backend/routes/health_router.py
-
 from fastapi import APIRouter
 from datetime import datetime, timedelta
 import time
@@ -19,15 +17,10 @@ def _format_uptime(seconds: int) -> str:
 
 @router.get("/")
 async def health_check():
-    """
-    OpenAPI-safe health check.
-    EVERYTHING must be pure strings, ints, or bools.
-    No tuples, no complex objects.
-    """
+
 
     uptime_sec = int(time.time() - START_TIME)
 
-    # GROQ status
     try:
         llm = get_llm()
         model_ok = bool(settings.TEXT_MODEL_NAME) and bool(settings.GROQ_API_KEY)
@@ -35,7 +28,6 @@ async def health_check():
     except Exception as e:
         groq_status = f"error: {str(e)}"
 
-    # MAKE EVERYTHING A STRING — this prevents $ref OpenAPI crash
     return {
         "status": "OK",
         "service": "AgriGPT Backend",

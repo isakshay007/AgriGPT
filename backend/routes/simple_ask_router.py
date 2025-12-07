@@ -1,5 +1,3 @@
-# backend/routes/simple_ask_router.py
-
 from fastapi import APIRouter, Form
 
 router = APIRouter(prefix="/simple", tags=["Simple"])
