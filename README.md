@@ -56,13 +56,16 @@ Unlike normal chatbots, AgriGPT decomposes user's complex intent and coordinates
 AgriGPT uses a **multi-agent system**, where each agent is a domain specialist with enforced boundaries.
 
 | Agent | Responsibility |
-|-------|----------------|
-| CropAgent | Crop cultivation practices, fertilizers, soil preparation |
-| PestAgent | Pest, disease, and visible symptom diagnosis (image-first) |
-| IrrigationAgent | Irrigation frequency and water management |
-| YieldAgent | Yield-related issue analysis and limiting factors |
-| SubsidyAgent | Government subsidy and scheme information (RAG-based) |
-| FormatterAgent | Final synthesis and presentation-only agent |
+|------|----------------|
+| **MasterAgent** | Interprets user intent, routes queries, and coordinates multi-agent execution |
+| **ClarificationAgent** | Handles vague or incomplete queries by generating targeted follow-up questions |
+| **CropAgent** | Crop cultivation practices, fertilizer usage, and soil preparation |
+| **PestAgent** | Pest, disease, and visible symptom diagnosis (image-first, multimodal support) |
+| **IrrigationAgent** | Irrigation scheduling and water management guidance |
+| **YieldAgent** | Yield-related issue analysis and limiting factor identification |
+| **SubsidyAgent** | Government subsidy and scheme information using Retrieval-Augmented Generation (RAG) |
+| **FormatterAgent** | Final response synthesis and presentation (no new reasoning or decision-making) |
+
 
 Each agent **cannot exceed its domain scope**, preventing unsafe or hallucinated advice.
 
