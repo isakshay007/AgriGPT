@@ -497,5 +497,110 @@
     "response": "# **Best Time to Plant Tomatoes**\n\n**Summary**: Plant tomatoes when soil is consistently 15\u201118\u202f\u00b0C and frost risk is gone\u2014typically mid\u2011April to early\u202fMay in temperate zones, adjusted for your local climate.\n\n### Analysis\n- **Temperature & Frost**: Tomatoes need soil\u202f\u2265\u202f15\u202f\u00b0C (60\u202f\u00b0F) and no chance of frost.  \n- **Season**: In most temperate regions this falls in late spring (mid\u2011April\u202f\u2013\u202fearly\u202fMay).  \n- **Soil Preparation**: Clear weeds, loosen the top 20\u201130\u202fcm, add 2\u20114\u202fkg\u202fm\u207b\u00b2 of well\u2011rotted compost or manure, and incorporate it for better organic matter and drainage.  \n- **Fertilization**: If soil tests show deficiencies, apply a balanced 10\u201110\u201110 fertilizer at 150\u2011200\u202fkg\u202fha\u207b\u00b9 (\u224815\u201120\u202fg\u202fm\u207b\u00b2) at planting, then side\u2011dress with nitrogen (urea or ammonium nitrate) at 50\u201180\u202fkg\u202fN\u202fha\u207b\u00b9 when true leaves appear and again after first fruit set.  \n- **Spacing**: Plant seedlings 45\u201160\u202fcm apart in rows 90\u2011120\u202fcm apart, burying the root ball and lower stem to promote a strong root system.  \n- **Watering**: Water thoroughly after planting to settle soil around roots.\n\n### Recommendations\n- **Timing**: Wait until soil temperature is steady at 15\u201118\u202f\u00b0C and the last frost date has passed.  \n- **Soil Prep**:  \n  - Remove weeds and debris.  \n  - Loosen 20\u201130\u202fcm of soil.  \n  - Incorporate 2\u20114\u202fkg\u202fm\u207b\u00b2 of compost/manure.  \n- **Fertilize**:  \n  - Apply 10\u201110\u201110 at 150\u2011200\u202fkg\u202fha\u207b\u00b9 at planting.  \n  - Side\u2011dress nitrogen (50\u201180\u202fkg\u202fN\u202fha\u207b\u00b9) when true leaves appear and after first fruit set.  \n- **Planting**:  \n  - Space seedlings 45\u201160\u202fcm apart, rows 90\u2011120\u202fcm apart.  \n  - Plant deep enough to cover the root ball and lower stem.  \n- **Water**: Give a deep watering immediately after planting; maintain consistent moisture throughout growth.  \n\nFollow these steps, adjusting dates to your local weather patterns, for a healthy tomato crop.",
     "type": "text",
     "meta": "{'routing_mode': 'text_only', 'agents': [{'agent': 'CropAgent', 'role': 'primary'}], 'agent_count': 1}"
+  },
+  {
+    "timestamp": "2026-03-06T05:08:56.848251",
+    "agent": "CropAgent",
+    "query": "What fertilizer for tomatoes?",
+    "response": "The system is temporarily unavailable. Please try again later.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2026-03-06T05:08:56.986256",
+    "agent": "FormatterAgent",
+    "query": "What fertilizer for tomatoes?",
+    "response": "The system is temporarily unavailable. Please try again later.",
+    "type": "text",
+    "meta": "{'routing_mode': 'text_only', 'agents': [{'agent': 'CropAgent', 'role': 'primary'}], 'agent_count': 1}"
+  },
+  {
+    "timestamp": "2026-03-06T05:24:24.392860",
+    "agent": "CropAgent",
+    "query": "Whats the fertilizers for tomato?",
+    "response": "For tomato cultivation, you can use a balanced fertilizer like NPK, which provides nitrogen, phosphorus, and potassium. The general dosage range for NPK can vary, but a common starting point is around 10-20 grams per plant, depending on the soil type and crop growth stage. If your soil is poor, you may also consider adding compost or organic matter to improve its fertility. Before applying any fertilizer, make sure to prepare your soil by loosening it to a depth of about 8-10 inches and mixing in some organic matter like compost or well-rotted manure. This will help improve soil structure and nutrient availability for your tomato plants. If you're unsure about the exact fertilizer dosage, it's best to consult local agricultural guidelines or a soil test report for more specific recommendations.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2026-03-06T05:24:25.076839",
+    "agent": "FormatterAgent",
+    "query": "Whats the fertilizers for tomato?",
+    "response": "**NPK (Nitrogen, Phosphorus, and Potassium) fertilizer** is a suitable choice for tomato cultivation. \n### Fertilizer Dosage and Application\nThe general dosage range for NPK can vary, but a common starting point is around **10-20 grams per plant**, depending on the soil type and crop growth stage. \n### Soil Preparation\nBefore applying any fertilizer, make sure to:\n* Loosen the soil to a depth of about **8-10 inches**\n* Mix in some organic matter like **compost or well-rotted manure** to improve soil structure and nutrient availability for your tomato plants.\n### Additional Tips\nIf your soil is poor, you may also consider adding **compost or organic matter** to improve its fertility. For more specific recommendations, it's best to:\n* Consult local agricultural guidelines\n* Refer to a soil test report",
+    "type": "text",
+    "meta": "{'routing_mode': 'text_only', 'agents': [{'agent': 'CropAgent', 'role': 'primary'}], 'agent_count': 1}"
+  },
+  {
+    "timestamp": "2026-03-06T05:25:09.345867",
+    "agent": "CropAgent",
+    "query": "Thanks how to improve when to add water for this?",
+    "response": "To improve tomato cultivation, make sure the soil is consistently moist, especially when the plants are fruiting. Water your tomato plants when the top 2-3 inches of soil feel dry to the touch. As for fertilizer, you can continue with the NPK fertilizer, applying it in split doses, such as half at planting and the rest when the plants are about a foot tall. The general dosage range for NPK can vary, but a common starting point is around 10-20 grams per plant, depending on the soil type and crop growth stage. If you haven't already, loosen the soil to a depth of about 8-10 inches and mix in some organic matter like compost or well-rotted manure to improve soil structure and nutrient availability for your tomato plants.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2026-03-06T05:25:09.789581",
+    "agent": "IrrigationAgent",
+    "query": "Thanks how to improve when to add water for this?",
+    "response": "To improve watering for your tomato plants, check the soil moisture by inserting your finger into the soil up to the knuckle, if the soil feels dry, it's time to water. If it's already moist, wait another day or two before watering again. Avoid overwatering, which can be identified by visible signs such as yellowing leaves, waterlogged soil, or puddles around the plants. On the other hand, underwatering can be detected by wilted or droopy leaves. \n\nFor water-saving, consider using drip irrigation, which delivers water directly to the roots, reducing evaporation and runoff. If you're using sprinklers, try to water early in the morning or evening to minimize evaporation. Flood irrigation can be effective, but be cautious not to overwater, as this method can be wasteful if not managed properly. \n\nIf you have sandy soil, you may need to water more frequently, while clay soil may require less frequent watering. In high temperatures, you may need to water more often to prevent moisture stress. However, without knowing your specific soil type and crop stage, it's difficult to provide an exact watering schedule, so it's essential to monitor your plants' response to watering and adjust accordingly.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2026-03-06T05:25:11.222454",
+    "agent": "FormatterAgent",
+    "query": "Thanks how to improve when to add water for this?",
+    "response": "**To improve watering for your tomato plants, check the soil moisture by inserting your finger into the soil up to the knuckle.** If the soil feels dry, it's time to water. If it's already moist, wait another day or two before watering again.\n\n### Watering Guidelines\n* Water your tomato plants when the top 2-3 inches of soil feel dry to the touch.\n* Avoid overwatering, which can be identified by visible signs such as yellowing leaves, waterlogged soil, or puddles around the plants.\n* Underwatering can be detected by wilted or droopy leaves.\n\n### Water-Saving Tips\n* Consider using **drip irrigation**, which delivers water directly to the roots, reducing evaporation and runoff.\n* If you're using sprinklers, try to water **early in the morning or evening** to minimize evaporation.\n* **Flood irrigation** can be effective, but be cautious not to overwater, as this method can be wasteful if not managed properly.\n\n### Factors Affecting Watering Schedule\n* **Soil type**: If you have sandy soil, you may need to water more frequently, while clay soil may require less frequent watering.\n* **Temperature**: In high temperatures, you may need to water more often to prevent moisture stress.\n* **Crop stage**: Make sure the soil is consistently moist, especially when the plants are fruiting.\n\n### Additional Tips for Tomato Cultivation\n* **Fertilizer**: Continue with the NPK fertilizer, applying it in split doses, such as half at planting and the rest when the plants are about a foot tall.\n* **Soil preparation**: Loosen the soil to a depth of about 8-10 inches and mix in some organic matter like compost or well-rotted manure to improve soil structure and nutrient availability.",
+    "type": "text",
+    "meta": "{'routing_mode': 'text_only', 'agents': [{'agent': 'IrrigationAgent', 'role': 'primary'}, {'agent': 'CropAgent', 'role': 'supporting'}], 'agent_count': 2}"
+  },
+  {
+    "timestamp": "2026-03-06T05:25:37.523422",
+    "agent": "IrrigationAgent",
+    "query": "okay whats the full process step by step let me know",
+    "response": "To water your tomato plants properly, first check the soil moisture by inserting your finger into the soil up to the knuckle, if it feels dry it's time to water, if it's already moist wait another day or two before watering again. Water your plants when the top 2-3 inches of soil feel dry to the touch, avoid overwatering which can be identified by visible signs such as yellowing leaves, waterlogged soil, or puddles around the plants, and underwatering can be detected by wilted or droopy leaves. Consider using drip irrigation to save water, it delivers water directly to the roots reducing evaporation and runoff. If you're using sprinklers, try to water early in the morning or evening to minimize evaporation. If you have sandy soil, you may need to water more frequently, while clay soil may require less frequent watering, and in high temperatures, you may need to water more often to prevent moisture stress. Make sure the soil is consistently moist, especially when the plants are fruiting.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2026-03-06T05:25:37.764408",
+    "agent": "CropAgent",
+    "query": "okay whats the full process step by step let me know",
+    "response": "To manage your tomato crop, start by preparing the soil, loosen it to a depth of about 8-10 inches and mix in some organic matter like compost or well-rotted manure to improve soil structure and nutrient availability. When planting, apply half of the NPK fertilizer, and the rest when the plants are about a foot tall, the exact dosage will depend on the specific fertilizer product and soil conditions, but a general range is around 100-200 kg per hectare for the full season. Water your tomato plants when the top 2-3 inches of soil feel dry to the touch, and avoid overwatering which can be identified by visible signs such as yellowing leaves, waterlogged soil, or puddles around the plants. Consider using drip irrigation to deliver water directly to the roots, reducing evaporation and runoff, and if you're using sprinklers, try to water early in the morning or evening to minimize evaporation. As the plants grow, especially when they are fruiting, make sure the soil is consistently moist, and adjust your watering schedule based on factors like soil type, temperature, and crop stage.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2026-03-06T05:25:38.870882",
+    "agent": "FormatterAgent",
+    "query": "okay whats the full process step by step let me know",
+    "response": "**The Full Process for Managing Your Tomato Crop:**\nTo manage your tomato crop, follow these steps:\n\n### Step 1: Soil Preparation\n* Loosen the soil to a depth of about 8-10 inches\n* Mix in organic matter like compost or well-rotted manure to improve soil structure and nutrient availability\n\n### Step 2: Planting and Fertilization\n* Apply half of the NPK fertilizer when planting\n* Apply the rest of the fertilizer when the plants are about a foot tall\n* The exact dosage will depend on the specific fertilizer product and soil conditions, but a general range is around 100-200 kg per hectare for the full season\n\n### Step 3: Watering\n* Water your tomato plants when the top 2-3 inches of soil feel dry to the touch\n* Avoid overwatering, which can be identified by visible signs such as:\n  * Yellowing leaves\n  * Waterlogged soil\n  * Puddles around the plants\n* Consider using drip irrigation to deliver water directly to the roots, reducing evaporation and runoff\n* If using sprinklers, try to water early in the morning or evening to minimize evaporation\n\n### Step 4: Ongoing Care\n* Check the soil moisture by inserting your finger into the soil up to the knuckle\n* Adjust your watering schedule based on factors like:\n  * Soil type\n  * Temperature\n  * Crop stage\n* Make sure the soil is consistently moist, especially when the plants are fruiting\n* Be aware of the signs of underwatering, such as:\n  * Wilted or droopy leaves\n\n### Additional Tips\n* If you have sandy soil, you may need to water more frequently\n* If you have clay soil, you may need to water less frequently\n* In high temperatures, you may need to water more often to prevent moisture stress\n* Using drip irrigation can help save water and reduce evaporation and runoff",
+    "type": "text",
+    "meta": "{'routing_mode': 'text_only', 'agents': [{'agent': 'CropAgent', 'role': 'primary'}, {'agent': 'IrrigationAgent', 'role': 'supporting'}], 'agent_count': 2}"
+  },
+  {
+    "timestamp": "2026-03-06T05:26:06.422905",
+    "agent": "PestAgent",
+    "query": "Image-based symptom observation",
+    "response": "Based on the provided image, here's a detailed analysis:\n\n**Visible Symptoms:**\n- The leaves of the plant exhibit discoloration, with areas turning yellow and brown.\n- There are necrotic spots or lesions, particularly noticeable on one of the leaves, which appears to be severely affected.\n- The affected areas seem to have a somewhat defined edge, but there is no clear pattern (e.g., uniform shape or distribution).\n- No visible signs of insects, white powdery coating, or mold are observed on the provided leaves.\n\n**Likely Issue:**\n- Given the presence of necrotic spots and discoloration (yellowing and browning), the issue could be related to a fungal or bacterial infection. However, without clearer evidence (like distinct patterns, spores, or ooze), it's challenging to pinpoint the exact cause.\n\n**Severity:**\n- The severity appears to be moderate. One leaf is significantly affected, showing substantial discoloration and necrosis, but not all leaves on the plant seem to be in this condition.\n\n**Uncertainty and Image Quality:**\n- The image quality is somewhat clear but could benefit from a closer view or higher resolution to observe details such as the presence of spores, bacterial ooze, or specific patterns of the lesions.\n\nIn conclusion, while the image suggests a potential fungal or bacterial issue due to the symptoms of discoloration and necrosis, a definitive diagnosis requires more information or a clearer image. Further inspection or laboratory testing might be necessary for an accurate identification of the pathogen.",
+    "type": "multimodal",
+    "image_path": "/var/folders/xl/fvs274bd5813xnm6j_hy6dd80000gn/T/tmp4uu87b6n.jpg"
+  },
+  {
+    "timestamp": "2026-03-06T05:26:07.829001",
+    "agent": "FormatterAgent",
+    "query": "Image-based diagnosis",
+    "response": "**No Image Provided for Diagnosis**\nUnfortunately, you haven't provided an image for analysis. However, I can guide you through a general approach to image-based diagnosis.\n\n### Understanding the Process\nImage-based diagnosis typically involves analyzing visible symptoms on the plant, such as discoloration, necrotic spots, or lesions, to identify potential issues.\n\n### Common Symptoms to Look For\n* Discoloration (yellowing or browning of leaves)\n* Necrotic spots or lesions\n* Presence of insects, white powdery coating, or mold\n\n### Likely Issues\nBased on common plant problems, symptoms like necrotic spots and discoloration could indicate a **fungal or bacterial infection**. However, a clear diagnosis requires a detailed examination of the plant's condition, often aided by high-quality images.\n\n### Next Steps\nTo proceed with an image-based diagnosis:\n1. **Provide a clear, high-resolution image** of the affected plant part.\n2. **Include multiple views** if possible, to show the extent and details of the symptoms.\n3. **Note any recent changes** in the plant's environment or care that might be relevant to the diagnosis.\n\nBy following these steps, you can help facilitate a more accurate diagnosis of your plant's issue.",
+    "type": "text",
+    "meta": "{'routing_mode': 'image_only', 'agents': [{'agent': 'PestAgent', 'role': 'primary'}], 'agent_count': 1}"
+  },
+  {
+    "timestamp": "2026-03-06T05:26:21.530601",
+    "agent": "CropAgent",
+    "query": "okay what else",
+    "response": "To improve crop growth, ensure your soil is well-prepared before planting, this includes removing weeds and debris, and loosening the soil to a depth of about 8-10 inches to allow for good root development. If you're using fertilizers, a balanced NPK fertilizer can be applied at planting time, with a general dosage range of 10-20 grams per plant, depending on the crop type and soil condition. It's also important to maintain a consistent soil moisture level, especially during the seedling stage. For most crops, a layer of organic compost or well-rotted manure can be added to the soil to improve its fertility and structure, the amount of compost to be added can vary but a general range is 1-2 kilograms per square meter. Regularly monitor your crop's growth stage and adjust your management practices accordingly, this may include providing support for climbing plants or pruning to promote healthy growth and fruiting.",
+    "type": "text"
+  },
+  {
+    "timestamp": "2026-03-06T05:26:22.226641",
+    "agent": "FormatterAgent",
+    "query": "okay what else",
+    "response": "To further improve your crop growth, **consider the following key factors**: \n### Soil Preparation\n* Remove weeds and debris from the soil\n* Loosen the soil to a depth of about 8-10 inches for good root development\n### Fertilization\n* Use a balanced NPK fertilizer at planting time\n* Apply 10-20 grams per plant, depending on the crop type and soil condition\n### Soil Moisture and Fertility\n* Maintain a consistent soil moisture level, especially during the seedling stage\n* Add a layer of organic compost or well-rotted manure to improve soil fertility and structure\n* Use 1-2 kilograms of compost per square meter\n### Ongoing Management\n* Regularly monitor your crop's growth stage\n* Adjust management practices accordingly, such as providing support for climbing plants or pruning to promote healthy growth and fruiting.",
+    "type": "text",
+    "meta": "{'routing_mode': 'text_only', 'agents': [{'agent': 'CropAgent', 'role': 'primary'}], 'agent_count': 1}"
   }
 ]

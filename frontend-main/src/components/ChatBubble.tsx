@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { ChatMessage } from "@/store/chatStore";
-import { User, Bot, Sparkles } from "lucide-react";
+import { User, Bot, Sparkles, ThumbsUp, ThumbsDown } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { submitFeedback } from "@/api/agriApi";
+import { toast } from "sonner";
 
 interface ChatBubbleProps {
   message: ChatMessage;
@@ -13,6 +16,18 @@ interface ChatBubbleProps {
 
 const ChatBubble = ({ message, index = 0 }: ChatBubbleProps) => {
   const isUser = message.role === "user";
+  const [feedback, setFeedback] = useState<"positive" | "negative" | null>(null);
+
+  const handleFeedback = async (value: "positive" | "negative") => {
+    if (feedback || !message.requestId) return;
+    try {
+      await submitFeedback(message.requestId, value, "chat");
+      setFeedback(value);
+      toast.success("Thanks for your feedback!");
+    } catch {
+      toast.error("Failed to submit feedback");
+    }
+  };
 
   return (
     <motion.div
@@ -108,9 +123,39 @@ const ChatBubble = ({ message, index = 0 }: ChatBubbleProps) => {
           )}
 
           {message.agent && !isUser && (
-            <div className="flex items-center gap-1.5 text-xs mt-3 pt-2 border-t border-border/30 text-muted-foreground">
-              <Sparkles className="w-3 h-3" />
-              <span>{message.agent}</span>
+            <div className="flex items-center justify-between gap-2 text-xs mt-3 pt-2 border-t border-border/30 text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3" />
+                <span>{message.agent}</span>
+              </div>
+              {message.requestId && (
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => handleFeedback("positive")}
+                    disabled={feedback !== null}
+                    className={cn(
+                      "p-1 rounded hover:bg-muted transition-colors",
+                      feedback === "positive" && "text-green-600"
+                    )}
+                    aria-label="Helpful"
+                  >
+                    <ThumbsUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleFeedback("negative")}
+                    disabled={feedback !== null}
+                    className={cn(
+                      "p-1 rounded hover:bg-muted transition-colors",
+                      feedback === "negative" && "text-red-600"
+                    )}
+                    aria-label="Not helpful"
+                  >
+                    <ThumbsDown className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </motion.div>

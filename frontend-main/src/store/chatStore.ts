@@ -7,6 +7,7 @@ export interface ChatMessage {
   timestamp: string;
   imageUrl?: string;
   agent?: string;
+  requestId?: string;
 }
 
 interface ChatState {

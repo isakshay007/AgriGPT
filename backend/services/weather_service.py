@@ -21,7 +21,11 @@ def get_current_weather(lat: float, lon: float) -> dict:
         if res.status_code != 200:
             return {"error": "Unable to fetch weather"}
 
-        condition_raw = data["weather"][0]["main"].lower()
+        weather_list = data.get("weather") or []
+        if not weather_list or not isinstance(weather_list[0], dict):
+            return {"error": "Invalid weather response"}
+
+        condition_raw = str(weather_list[0].get("main", "clear")).lower()
 
         condition = (
             "rainy" if "rain" in condition_raw else
@@ -29,11 +33,13 @@ def get_current_weather(lat: float, lon: float) -> dict:
             "sunny"
         )
 
+        main = data.get("main") or {}
+        wind = data.get("wind") or {}
         return {
             "location": data.get("name", "Your Location"),
-            "temp": round(data["main"]["temp"]),
-            "humidity": data["main"]["humidity"],
-            "wind": round(data["wind"]["speed"] * 3.6), 
+            "temp": round(float(main.get("temp", 0))),
+            "humidity": int(main.get("humidity", 0)),
+            "wind": round(float(wind.get("speed", 0)) * 3.6),
             "condition": condition,
         }
 

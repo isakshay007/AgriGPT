@@ -1,5 +1,6 @@
 from backend.services.text_service import query_groq_text
 from backend.agents.agri_agent_base import AgriAgentBase
+from backend.core.prompt_loader import get_prompt
 
 
 class IrrigationAgent(AgriAgentBase):
@@ -10,7 +11,15 @@ class IrrigationAgent(AgriAgentBase):
 
     name = "IrrigationAgent"
 
-    def handle_query(self, query: str = None, image_path: str = None, chat_history: str = None) -> str:
+    def handle_query(
+        self,
+        query: str = None,
+        image_path: str = None,
+        chat_history: str = None,
+        request_id: str = None,
+        session_id: str = None,
+        **kwargs,
+    ) -> str:
 
         if not query or not isinstance(query, str) or not query.strip():
             response = (
@@ -24,46 +33,21 @@ class IrrigationAgent(AgriAgentBase):
 
         clean_query = query.strip()
 
-        # Irrigation prompt 
-        prompt = " ".join([
-            "You are AgriGPT IrrigationAgent.",
-            "ROLE: You are an irrigation and water management specialist.",
-
-            "YOU HANDLE ONLY irrigation frequency (stage-based or conditional), soil moisture management,",
-            "and drip, sprinkler, and flood irrigation practices, including water-saving methods.",
-
-            "STRICT BOUNDARIES:",
-            "Do NOT diagnose pests, diseases, or nutrient deficiencies.",
-            "Do NOT analyze images.",
-            "Do NOT calculate or optimize yield.",
-            "Do NOT recommend chemicals or fertilizers.",
-            "Do NOT give subsidy or government scheme advice.",
-
-            "SAFETY RULES:",
-            "Do NOT guess soil type or crop stage unless the farmer explicitly states it.",
-            "Use conditional guidance such as 'if sandy soil' or 'if high temperature'.",
-            "If essential details are missing, say so clearly.",
-            "Avoid exact schedules when conditions are unknown.",
-
-            f"PREVIOUS CONTEXT: {chat_history if chat_history else 'None'}",
-            f"FARMER QUERY: {clean_query}",
-
-            "RESPONSE INSTRUCTIONS:",
-            "Give clear and practical irrigation advice.",
-            "Explain when to water and when NOT to water.",
-            "Mention visible signs of overwatering and underwatering only.",
-            "Suggest water-saving practices where relevant.",
-            "Keep language farmer-friendly and easy to follow.",
-            "Avoid repetition and theory.",
-
-            "OUTPUT:",
-            "Plain advisory text only.",
-            "No formatting, no titles, no forced bullets."
-        ])
-
-        # LLM call
         try:
-            resp = query_groq_text(prompt)
+            prompt = get_prompt(
+                "irrigation_agent.template",
+                chat_history=chat_history or "None",
+                query=clean_query,
+            )
+        except Exception:
+            prompt = f"PREVIOUS CONTEXT: {chat_history or 'None'}\nFARMER QUERY: {clean_query}"
+
+        try:
+            resp, _ = query_groq_text(
+                prompt,
+                request_id=request_id,
+                session_id=session_id,
+            )
         except Exception:
             resp = "Irrigation advice could not be generated at this time."
 

@@ -1,5 +1,7 @@
 from backend.services.text_service import query_groq_text
 from backend.agents.agri_agent_base import AgriAgentBase
+from backend.core.prompt_loader import get_prompt
+
 
 class CropAgent(AgriAgentBase):
     """
@@ -10,7 +12,15 @@ class CropAgent(AgriAgentBase):
 
     name = "CropAgent"
 
-    def handle_query(self, query: str = None, image_path: str = None, chat_history: str = None) -> str:
+    def handle_query(
+        self,
+        query: str = None,
+        image_path: str = None,
+        chat_history: str = None,
+        request_id: str = None,
+        session_id: str = None,
+        **kwargs,
+    ) -> str:
 
         if not query or not query.strip():
             response = (
@@ -24,35 +34,26 @@ class CropAgent(AgriAgentBase):
 
         clean_query = query.strip()
 
-        # Crop-specific prompt
-        prompt = " ".join([
-            "You are AgriGPT CropAgent.",
-            "ROLE: You are a crop management specialist.",
-            "You provide guidance ONLY on crop cultivation practices, fertilizer planning (general or conditional), soil preparation, and crop growth stage care.",
-            "STRICT BOUNDARIES: Do NOT diagnose pests or diseases. Do NOT identify insects or leaf damage. Do NOT analyze images.",
-            "Do NOT give subsidy or loan information. Do NOT give irrigation schedules. Do NOT override other expert agents.",
-            "SAFETY RULES: Do NOT guess soil type, crop variety, or region unless stated.",
-            "Use conditional language when required. If essential details are missing, say so clearly.",
-            "Do NOT invent chemical names or dosages.",
-            f"PREVIOUS CONTEXT: {chat_history if chat_history else 'None'}",
-            f"FARMER QUERY: {clean_query}",
-            "RESPONSE INSTRUCTIONS:",
-            "Give practical, actionable crop management advice.",
-            "Use simple, farmer-friendly language.",
-            "If fertilizer is mentioned, provide type (example: NPK, urea, compost) and a general dosage range or conditional guidance when exact dosage is unknown.",
-            "Mention soil preparation steps if relevant.",
-            "Focus ONLY on crop practices. Avoid repetition and theory.",
-            "OUTPUT: Plain advisory text only. No formatting, no titles, no forced bullets."
-        ])
-
-        # LLM call
         try:
-            resp = query_groq_text(prompt)
-        except Exception as e:
+            prompt = get_prompt(
+                "crop_agent.template",
+                chat_history=chat_history or "None",
+                query=clean_query,
+            )
+        except Exception:
+            prompt = f"PREVIOUS CONTEXT: {chat_history or 'None'}\nFARMER QUERY: {clean_query}"
+
+        try:
+            resp, _ = query_groq_text(
+                prompt,
+                request_id=request_id,
+                session_id=session_id,
+            )
+        except Exception:
             resp = "Crop advice could not be generated at this time."
 
         return self.respond_and_record(
             query=clean_query,
             response=resp,
-            image_path=image_path
+            image_path=image_path,
         )

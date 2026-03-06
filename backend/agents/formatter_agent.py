@@ -1,6 +1,8 @@
 from typing import Any, Dict, List
+
 from backend.services.text_service import query_groq_text
 from backend.agents.agri_agent_base import AgriAgentBase
+from backend.core.langchain_prompts import FORMATTER_PROMPT
 
 
 class FormatterAgent(AgriAgentBase):
@@ -16,8 +18,15 @@ class FormatterAgent(AgriAgentBase):
 
     name = "FormatterAgent"
 
-
-    def handle_query(self, payload: Any, image_path: str = None, chat_history: str = None) -> str:
+    def handle_query(
+        self,
+        payload: Any = None,
+        image_path: str = None,
+        chat_history: str = None,
+        request_id: str = None,
+        session_id: str = None,
+        **kwargs,
+    ) -> str:
 
         if isinstance(payload, str):
             clean_text = payload.strip()
@@ -31,6 +40,8 @@ class FormatterAgent(AgriAgentBase):
                 ordered_blocks=[clean_text],
                 image_path=image_path,
                 meta=None,
+                request_id=request_id,
+                session_id=session_id,
             )
 
         if not isinstance(payload, dict):
@@ -64,7 +75,8 @@ class FormatterAgent(AgriAgentBase):
         for item in agent_results_sorted:
             role = str(item.get("role", "supporting")).lower()
             agent = str(item.get("agent", "UnknownAgent"))
-            content = str(item.get("content", "")).strip()
+            raw_content = item.get("content")
+            content = str(raw_content or "").strip()
 
             if content:
                 ordered_blocks.append(
@@ -91,6 +103,8 @@ class FormatterAgent(AgriAgentBase):
             ordered_blocks=ordered_blocks,
             image_path=image_path,
             meta=meta,
+            request_id=request_id,
+            session_id=session_id,
         )
 
     def _format_text(
@@ -99,69 +113,27 @@ class FormatterAgent(AgriAgentBase):
         ordered_blocks: List[str],
         image_path: str = None,
         meta: Dict[str, Any] = None,
+        request_id: str = None,
+        session_id: str = None,
     ) -> str:
 
         combined_content = "\n\n".join(ordered_blocks)
 
-        prompt = f"""
-SYSTEM ROLE:
-You are AgriGPT FormatterAgent.
-
-You are the FINAL OUTPUT LAYER.
-Your goal is to provide a CLEAR, COMPREHENSIVE, and FRIENDLY response to the farmer.
-
-==================================================
-INPUT CONTEXT
-==================================================
-User Query: "{user_query}"
-Has Image: {"Yes" if image_path else "No"}
-
-Expert Agent Responses:
-{combined_content}
-
-==================================================
-INSTRUCTIONS
-==================================================
-
-1. **SYNTHESIZE (Direct & Punchy)**:
-   - **SKIP THE PREAMBLE**. Do not say "We understand...", "Based on the analysis...", or "The user is asking...".
-   - Start IMMEDIATELY with the answer or summary.
-   - If multiple agents responded, weave insights together.
-   - Start with a direct answer to the user's core question.
-   - If there is an image diagnosis, mention it early ("Based on the image, we see...").
-
-2. **TONE**:
-   - Professional, encouraging, and easy to understand.
-   - Use "We" or "I" to sound like a helpful assistant.
-
-3. **FORMATTING (Markdown Allowed)**:
-   - Use **Bold** for emphasis and headings. 
-   - Use `### Headers` to separate sections (e.g., "Diagnosis", "Treatment", "Prevention").
-   - Use bullet points for lists.
-   - Use **Bold** for the title of the response.
-
-4. **SAFETY**:
-   - Do not invent new chemical advice not present in the expert text.
-   - If experts disagree, mention the uncertainty.
-
-==================================================
-FINAL OUTPUT STRUCTURE
-==================================================
-
-# **Title (Clear & Short)**
-
-**Summary**: [1-2 sentences summarizing the situation]
-
-### Analysis
-[Detailed synthesis of what was found]
-
-### Recommendations
-[Actionable steps from the agents]
-
-"""
+        prompt_msgs = FORMATTER_PROMPT.format_messages(
+            user_query=user_query,
+            has_image="Yes" if image_path else "No",
+            combined_content=combined_content,
+        )
+        system_content = prompt_msgs[0].content if prompt_msgs else ""
+        user_content = prompt_msgs[1].content if len(prompt_msgs) > 1 else combined_content
 
         try:
-            formatted = query_groq_text(prompt)
+            formatted, _ = query_groq_text(
+                user_content,
+                system_msg=system_content if system_content else None,
+                request_id=request_id,
+                session_id=session_id,
+            )
         except Exception:
             formatted = combined_content
 

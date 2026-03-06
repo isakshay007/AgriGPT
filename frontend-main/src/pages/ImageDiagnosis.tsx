@@ -1,19 +1,22 @@
 import { useState, useEffect } from "react";
-import { Upload, X, Camera, CheckCircle, AlertCircle } from "lucide-react";
+import { Upload, X, Camera, CheckCircle, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { askImage } from "@/api/agriApi";
+import { askImage, submitFeedback } from "@/api/agriApi";
 import Loader from "@/components/Loader";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { cn } from "@/lib/utils";
 
 const ImageDiagnosis = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [lastRequestId, setLastRequestId] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<"positive" | "negative" | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
   useEffect(() => {
@@ -28,14 +31,15 @@ const ImageDiagnosis = () => {
     processFile(file);
   };
 
-  const processFile = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select a valid image file");
+  const   processFile = (file: File) => {
+    const allowed = ["image/jpeg", "image/png"];
+    if (!allowed.includes(file.type)) {
+      toast.error("Please select a JPG or PNG image (max 8MB)");
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Image size must be less than 10MB");
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image size must be less than 8MB");
       return;
     }
 
@@ -64,14 +68,31 @@ const ImageDiagnosis = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
     setResult(null);
+    setLastRequestId(null);
+    setFeedback(null);
+  };
+
+  const handleFeedback = async (value: "positive" | "negative") => {
+    if (feedback || !lastRequestId) return;
+    try {
+      await submitFeedback(lastRequestId, value, "image");
+      setFeedback(value);
+      toast.success("Thanks for your feedback!");
+    } catch {
+      toast.error("Failed to submit feedback");
+    }
   };
 
   const extractErrorMessage = (error: any) => {
+    const d = error?.response?.data;
+    const detail = Array.isArray(d?.detail)
+      ? d.detail.map((e: any) => e?.msg ?? String(e)).join("; ")
+      : d?.detail;
     return (
-      error?.response?.data?.detail ||
-      error?.response?.data?.error ||
-      error?.response?.data?.message ||
-      error?.message ||
+      error?.message ??
+      detail ??
+      d?.error ??
+      d?.message ??
       "Failed to diagnose image"
     );
   };
@@ -84,8 +105,10 @@ const ImageDiagnosis = () => {
 
     try {
       setIsLoading(true);
+      setFeedback(null);
       const response = await askImage(selectedImage);
-      setResult(response.analysis);
+      setResult(response?.analysis ?? "");
+      setLastRequestId(response?.request_id ?? null);
       toast.success("Diagnosis complete");
     } catch (error: any) {
       console.error("Diagnosis error:", error);
@@ -145,7 +168,7 @@ const ImageDiagnosis = () => {
                 >
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png"
                     onChange={handleImageSelect}
                     className="hidden"
                   />
@@ -159,7 +182,7 @@ const ImageDiagnosis = () => {
                     {isDragOver ? "Drop your image here" : "Click or drag to upload"}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Supports JPG, PNG, WEBP (max 10MB)
+                    Supports JPG, PNG (max 8MB)
                   </p>
                 </motion.label>
               ) : (
@@ -247,6 +270,36 @@ const ImageDiagnosis = () => {
                             {result}
                           </ReactMarkdown>
                         </div>
+
+                        {lastRequestId && (
+                          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/50">
+                            <span className="text-xs text-muted-foreground">Was this helpful?</span>
+                            <button
+                              type="button"
+                              onClick={() => handleFeedback("positive")}
+                              disabled={feedback !== null}
+                              className={cn(
+                                "p-2 rounded-lg hover:bg-muted transition-colors",
+                                feedback === "positive" && "text-green-600 bg-green-500/10"
+                              )}
+                              aria-label="Helpful"
+                            >
+                              <ThumbsUp className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleFeedback("negative")}
+                              disabled={feedback !== null}
+                              className={cn(
+                                "p-2 rounded-lg hover:bg-muted transition-colors",
+                                feedback === "negative" && "text-red-600 bg-red-500/10"
+                              )}
+                              aria-label="Not helpful"
+                            >
+                              <ThumbsDown className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
 
                         <Button 
                           onClick={removeImage} 

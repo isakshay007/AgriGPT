@@ -1,225 +1,315 @@
-# AgriGPT – Multimodal AI Farming Assistant
+# 🌾 AgriGPT – Multimodal AI Farming Assistant
 
-AgriGPT is an end-to-end **multimodal, multi-agent agricultural advisory system** designed to provide reliable, domain-specific, and safety-aware guidance to farmers. The system supports **text queries, image-based crop diagnosis, and multi-turn conversations**, while intelligently routing requests to specialized expert agents such as crop management, pest diagnostics, irrigation, yield analysis, and government subsidies.
+[![CI](https://github.com/isakshay007/AgriGPT/actions/workflows/ci.yml/badge.svg)](https://github.com/isakshay007/AgriGPT/actions/workflows/ci.yml)
 
-Unlike normal chatbots, AgriGPT decomposes user's complex intent and coordinates multiple constrained expert agents, ensuring accurate responses, reduced hallucinations, and explainable decision-making.
+**AgriGPT** is an end-to-end **multimodal, multi-agent agricultural advisory system** that delivers reliable, domain-specific, and safety-aware guidance to farmers. It supports **text queries, image-based crop diagnosis, and multi-turn conversations**, intelligently routing requests to specialized expert agents for crop management, pest diagnostics, irrigation, yield analysis, and government subsidies.
 
----
-
-## Key Features:
-
-- Multi-agent architecture with strict role boundaries
-- Multimodal support (text-only, image-only, text + image)
-- Vision-based crop pest and disease diagnostics
-- LLM-based intent routing with confidence scoring
-- Retrieval-Augmented Generation (RAG) for subsidy information
-- Session-based conversational memory
-- Safety-first prompting and execution constraints
-- Production-grade FastAPI backend
-- Modern, animated React frontend
+Unlike generic chatbots, AgriGPT decomposes user intent and orchestrates multiple constrained expert agents—**reducing hallucinations** and enabling **explainable, grounded responses**.
 
 ---
 
+## Table of Contents
 
-
-## System Architecture Overview:
-
-
-
-### Backend (FastAPI + Python)
-
-- Intent routing using LLM relevance scoring
-- Multi-agent orchestration and execution
-- Image-based vision analysis using Groq vision models
-- Retrieval-based subsidy guidance using FAISS
-- Session memory and query history logging
-- Weather data integration
-- Robust input validation and retry logic
-
-### Frontend (React + TypeScript)
-
-- Real-time conversational chat interface
-- Image upload with preview and validation
-- Multimodal chat flow (text + image)
-- Weather-aware UI header
-- Conversation history viewer
-
-### LLM Models
-
- - Text Model: llama-3.1-70b-versatile
- - Vision Model: llama-3.2-vision-preview
+- [Architecture](#-architecture)
+- [Key Features](#-key-features)
+- [Project Structure](#-project-structure)
+- [Agents](#-agent-based-design)
+- [API & Metrics](#-api--metrics)
+- [Technology Stack](#-technology-stack)
+- [Getting Started](#-getting-started)
+- [Authors](#-authors)
 
 ---
 
-##  Agent-Based Design:
+## Architecture
 
-AgriGPT uses a **multi-agent system**, where each agent is a domain specialist with enforced boundaries.
+### System Overview
 
-| Agent | Responsibility |
-|------|----------------|
-| **MasterAgent** | Interprets user intent, routes queries, and coordinates multi-agent execution |
-| **ClarificationAgent** | Handles vague or incomplete queries by generating targeted follow-up questions |
-| **CropAgent** | Crop cultivation practices, fertilizer usage, and soil preparation |
-| **PestAgent** | Pest, disease, and visible symptom diagnosis (image-first, multimodal support) |
-| **IrrigationAgent** | Irrigation scheduling and water management guidance |
-| **YieldAgent** | Yield-related issue analysis and limiting factor identification |
-| **SubsidyAgent** | Government subsidy and scheme information using Retrieval-Augmented Generation (RAG) |
-| **FormatterAgent** | Final response synthesis and presentation (no new reasoning or decision-making) |
+```mermaid
+flowchart TB
+    subgraph Client
+        UI[React Frontend]
+    end
 
+    subgraph Backend["FastAPI Backend"]
+        AskRouter["/ask/text, /ask/image, /ask/chat"]
+        MetricsRouter["/metrics/*"]
+        WeatherRouter["/weather"]
+        HealthRouter["/health"]
+    end
 
-Each agent **cannot exceed its domain scope**, preventing unsafe or hallucinated advice.
+    subgraph Orchestration
+        MasterAgent[MasterAgent]
+        Router[LLM Intent Router]
+    end
 
----
+    subgraph Agents["Expert Agents"]
+        CropAgent[CropAgent]
+        PestAgent[PestAgent]
+        IrrigationAgent[IrrigationAgent]
+        YieldAgent[YieldAgent]
+        SubsidyAgent[SubsidyAgent]
+        FormatterAgent[FormatterAgent]
+    end
 
-##  Intelligent Query Routing:
+    subgraph Services
+        Vision[Vision Service<br/>Llama 4 Scout]
+        Text[Text Service<br/>Llama 3.3 70B]
+        RAG[RAG Chain<br/>FAISS / Pinecone]
+        Memory[Memory Manager<br/>Redis / In-Memory]
+        Weather[OpenWeather API]
+    end
 
-AgriGPT includes an LLM-powered intent router that:
-
-- Scores all available agents on a **0–100 relevance scale**
-- Selects **one dominant (primary) agent**
-- Adds **supporting agents only if relevance exceeds thresholds**
-- Enforces a maximum of **3 agents per query**
-- Automatically includes **PestAgent** when an image is present
-
-This ensures focused, efficient, and interpretable responses.
-
----
-
-##  Multimodal Query Handling:
-
-AgriGPT supports three interaction modes:
-
-- **Text-only queries** → Routed via intent scoring
-- **Image-only queries** → Direct PestAgent diagnosis
-- **Text + Image queries** → Combined reasoning across agents
-
-
----
-
-##  Retrieval-Augmented Generation (RAG):
-
-Subsidy-related queries use a verified data pipeline:
-
-- FAISS vector store
-- Sentence-transformer embeddings
-- Curated `subsidies.json` dataset
-
-This ensures:
-
-- No hallucinated government schemes
-- Eligibility and benefits grounded in official data
-- Transparent, explainable responses
-
----
-
-##  Conversational Memory:
-
-- Frontend stores a persistent `session_id`
-- Backend maintains the **last 10 messages per session**
-- Used for contextual routing (pronouns, follow-ups, references)
-- Prevents loss of conversational coherence
-
----
-
-##  Logging and Observability:
-
-Every interaction is logged with:
-
-- Timestamp (UTC)
-- Agent name
-- Query type (text / image / multimodal)
-- Truncated response content
-- Optional metadata
-
-Logs automatically rotate after reaching size limits to ensure stability.
-
----
-
-##  Weather Integration:
-
-The frontend integrates location-based weather insights:
-
-- Temperature
-- Humidity
-- Wind speed
-- General condition (sunny / cloudy / rainy)
-
-Powered by the OpenWeather API and used to enhance farming context.
-
----
-
-##  Technology Stack:
-
-### Backend
-
-- Python 3.10+
-- FastAPI
-- Groq LLMs (text + vision)
-- LangChain
-- FAISS
-- Pydantic Settings
-- OpenWeather API
-
-### Frontend
-
-- React + TypeScript
-- Vite
-- Tailwind CSS
-- Framer Motion
-- Axios
-- Zustand 
-
----
-
-##  Running the Project Locally:
-
-### Backend
-
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload
+    UI --> AskRouter
+    UI --> MetricsRouter
+    AskRouter --> MasterAgent
+    MasterAgent --> Router
+    Router --> CropAgent
+    Router --> PestAgent
+    Router --> IrrigationAgent
+    Router --> YieldAgent
+    Router --> SubsidyAgent
+    CropAgent --> Text
+    PestAgent --> Vision
+    PestAgent --> Text
+    SubsidyAgent --> RAG
+    MasterAgent --> FormatterAgent
+    MasterAgent --> Memory
+    WeatherRouter --> Weather
 ```
 
+### Request Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant API
+    participant MasterAgent
+    participant Router
+    participant Agent
+    participant LLM
+    participant Memory
+    participant RAG
+
+    User->>Frontend: Query (text / image)
+    Frontend->>API: POST /ask/chat
+    API->>MasterAgent: route_query()
+    MasterAgent->>Memory: get_chat_history()
+    alt Text-only
+        MasterAgent->>Router: LLM relevance scoring
+        Router->>MasterAgent: Agent scores (0–100)
+        MasterAgent->>Agent: handle_query() [parallel]
+    else Image present
+        MasterAgent->>Agent: PestAgent (primary)
+    end
+    Agent->>LLM: Groq API (text / vision)
+    Agent-->>MasterAgent: response
+    alt Subsidy query
+        Agent->>RAG: invoke_subsidy_rag_chain()
+    end
+    MasterAgent->>FormatterAgent: synthesize
+    MasterAgent->>Memory: add_message_to_history()
+    FormatterAgent-->>API: response
+    API-->>Frontend: JSON + token_usage
+    Frontend-->>User: Display
+```
+
+---
+
+##  Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **Multi-Agent** | 7 specialized agents with strict role boundaries; max 3 agents per query |
+| **Multimodal** | Text-only, image-only, or text + image in a single flow |
+| **Vision AI** | Crop pest & disease diagnosis via Groq Llama 4 Scout |
+| **RAG** | SubsidyAgent uses FAISS/Pinecone; no hallucinated schemes |
+| **Memory** | Redis-backed or in-memory; last 10 messages per session |
+| **Metrics** | Usage (by agent, type, day) + quality (satisfaction rate) |
+| **CI/CD** | GitHub Actions: tests, lint, Docker build |
+| **Token Tracking** | Per-request and per-session cost estimation |
+
+---
+
+##  Project Structure
+
+```
+AgriGPT/
+├── backend/
+│   ├── agents/           # Multi-agent system
+│   │   ├── master_agent.py      # Orchestrator, LLM router
+│   │   ├── crop_agent.py
+│   │   ├── pest_agent.py
+│   │   ├── irrigation_agent.py
+│   │   ├── yield_agent.py
+│   │   ├── subsidy_agent.py     # RAG + guardrails
+│   │   └── formatter_agent.py
+│   ├── core/
+│   │   ├── config.py
+│   │   ├── llm_client.py
+│   │   ├── memory_manager.py    # Redis / in-memory
+│   │   ├── router_schema.py     # Pydantic router output
+│   │   ├── token_tracker.py
+│   │   └── guardrails.py
+│   ├── routes/
+│   │   ├── ask_router.py
+│   │   ├── metrics_router.py
+│   │   ├── health_router.py
+│   │   └── weather_router.py
+│   ├── services/
+│   │   ├── vision_service.py
+│   │   ├── text_service.py
+│   │   ├── rag_chain.py         # LCEL RAG pipeline
+│   │   ├── feedback_service.py
+│   │   └── history_service.py
+│   ├── prompts/
+│   │   └── prompts.yaml
+│   ├── data/
+│   │   ├── subsidies.json
+│   │   ├── query_log.json
+│   │   └── feedback_log.json
+│   └── tests/
+├── frontend-main/
+│   ├── src/
+│   │   ├── pages/        # Chat, ImageDiagnosis, History
+│   │   ├── components/
+│   │   ├── api/
+│   │   └── store/
+│   └── ...
+├── .github/workflows/ci.yml
+└── docker-compose.yml
+```
+
+---
+
+## 🤖 Agent-Based Design
+
+| Agent | Responsibility |
+|-------|-----------------|
+| **MasterAgent** | Interprets intent, routes queries, coordinates execution |
+| **ClarificationAgent** | Handles vague queries with targeted follow-ups |
+| **CropAgent** | Cultivation, fertilizer, soil preparation |
+| **PestAgent** | Pest & disease diagnosis (image-first, vision model) |
+| **IrrigationAgent** | Water management, scheduling |
+| **YieldAgent** | Yield analysis, limiting factors |
+| **SubsidyAgent** | Government schemes via RAG (FAISS/Pinecone) |
+| **FormatterAgent** | Final synthesis (no new reasoning) |
+
+**Routing rules:** Primary agent ≥75 score; supporting agents ≥50; max 3 agents; PestAgent auto-included when image present.
+
+---
+
+##  API 
+
+### Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/ask/text` | POST | Text-only farming queries |
+| `/ask/image` | POST | Image-only crop diagnosis |
+| `/ask/chat` | POST | Multimodal (text + optional image) |
+| `/weather/current` | GET | Location-based weather |
+| `/health` | GET | Service health, models, dependencies |
+| `/metrics/usage` | GET | Usage metrics (agents, types, daily counts) |
+| `/metrics/quality` | GET | Quality metrics (feedback, satisfaction rate) |
+| `/metrics/feedback` | POST | Submit positive/negative feedback |
+| `/docs` | GET | OpenAPI Swagger UI |
+
+
+---
+
+## Technology Stack
+
+### Backend
+- **Python 3.11/3.12** · **FastAPI** · **Pydantic**
+- **Groq** – Llama 3.3 70B (text), Llama 4 Scout (vision)
+- **LangChain** · **LangSmith** (tracing)
+- **FAISS** / **Pinecone** (RAG vector store)
+- **Redis** (chat memory) or in-memory fallback
+- **Sentence-transformers** (embeddings)
+- **OpenWeather API**
+- **Ruff** (linting) · **pytest** (tests)
+
+### Frontend
+- **React 18** · **TypeScript** · **Vite**
+- **Tailwind CSS** · **Framer Motion**
+- **Zustand** (state) · **Axios** · **React Query**
+- **Radix UI** · **shadcn/ui**
+
+### DevOps
+- **Docker** · **docker-compose**
+- **GitHub Actions** (CI: tests, lint, Docker build)
+- **Nginx** (frontend reverse proxy)
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Python 3.11 or 3.12
+- Node.js 20+
+- [Groq API key](https://console.groq.com)
+
+### Backend
+
+```bash
+cp backend/env.example backend/.env
+# Edit backend/.env: set GROQ_API_KEY
+
+pip install -r backend/requirements.txt
+uvicorn backend.main:app --reload
+```
+
+→ Backend: http://localhost:8000 | API docs: http://localhost:8000/docs
+
 ### Frontend
 
 ```bash
-cd frontend
+cd frontend-main
 npm install
 npm run dev
 ```
 
-### Environment Configuration
+→ Frontend: http://localhost:3000
 
-Create a `.env` file in the backend directory:
+### Docker
 
-```env
-GROQ_API_KEY=your_groq_api_key
-OPENWEATHER_API_KEY=your_openweather_api_key
+```bash
+# Set GROQ_API_KEY in .env, then:
+docker-compose up --build
+```
+
+- Backend: http://localhost:8000  
+- Frontend: http://localhost:3000  
+- Redis: persistent chat memory  
+
+### Environment (.env)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GROQ_API_KEY` | Yes | Groq API key |
+| `OPENWEATHER_API_KEY` | No | Weather in header |
+| `REDIS_URL` | No | `redis://localhost:6379/0` for persistent memory |
+| `PINECONE_API_KEY` | No | RAG; falls back to FAISS if unset |
+| `LANGSMITH_API_KEY` | No | LLM tracing |
+
+### Tests
+
+```bash
+pytest backend/tests/ -v
 ```
 
 ---
 
-##  API Endpoints
-
-| Endpoint | Description |
-|----------|-------------|
-| `/ask/text` | Text-only farming queries |
-| `/ask/image` | Image-only crop diagnosis |
-| `/ask/chat` | Multimodal chat (text + image) |
-| `/weather/current` | Location-based weather |
-| `/health` | Backend health check |
-
----
-
-##  License
+## License
 
 This project is intended for academic purposes only.
 
 ---
 
-##  Authors
+## Authors
 
-**Akshay Keerthi Adhikasavan Suresh**  , **Anish Gawde** 
+**Akshay Keerthi Adhikasavan Suresh** 
 
----  
+---

@@ -51,8 +51,9 @@ const Chat = () => {
 
       addMessage({
         role: "assistant",
-        content: response.analysis,
-        agent: "AgriGPT"
+        content: response?.analysis ?? "",
+        agent: "AgriGPT",
+        requestId: response?.request_id,
       });
 
       toast.success("Response received");
@@ -60,8 +61,12 @@ const Chat = () => {
     } catch (error: any) {
       console.error("Chat error:", error);
       const errorMessage =
-        error.response?.data?.detail ||
-        error.message ||
+        error?.message ??
+        (error?.response?.data?.detail
+          ? (Array.isArray(error.response.data.detail)
+              ? error.response.data.detail.map((e: any) => e?.msg ?? String(e)).join("; ")
+              : String(error.response.data.detail))
+          : null) ??
         "Failed to get response";
 
       setError(errorMessage);

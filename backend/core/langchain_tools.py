@@ -1,4 +1,6 @@
+"""Agent registry - cached to avoid repeated instantiation."""
 from __future__ import annotations
+
 from typing import Dict, List, TypeAlias
 
 from backend.agents.crop_agent import CropAgent
@@ -13,18 +15,22 @@ AgentRegistry: TypeAlias = Dict[str, object]
 # FormatterAgent must never be selected by router
 NON_ROUTABLE_AGENTS = {"FormatterAgent"}
 
+_AGENT_REGISTRY_CACHE: AgentRegistry | None = None
+
+
 def get_agent_registry() -> AgentRegistry:
-    """
-    Return a fresh registry on each call.
-    """
-    return {
-        "CropAgent": CropAgent(),
-        "PestAgent": PestAgent(),
-        "IrrigationAgent": IrrigationAgent(),
-        "SubsidyAgent": SubsidyAgent(),
-        "YieldAgent": YieldAgent(),
-        "FormatterAgent": FormatterAgent(),
-    }
+    """Return cached agent registry - single instance per process."""
+    global _AGENT_REGISTRY_CACHE
+    if _AGENT_REGISTRY_CACHE is None:
+        _AGENT_REGISTRY_CACHE = {
+            "CropAgent": CropAgent(),
+            "PestAgent": PestAgent(),
+            "IrrigationAgent": IrrigationAgent(),
+            "SubsidyAgent": SubsidyAgent(),
+            "YieldAgent": YieldAgent(),
+            "FormatterAgent": FormatterAgent(),
+        }
+    return _AGENT_REGISTRY_CACHE
 
 # Router Metadata
 AGENT_DESCRIPTIONS: List[dict] = [

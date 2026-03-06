@@ -11,7 +11,8 @@ interface ChatInputProps {
   onClear?: () => void;
 }
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE = 8 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png"];
 
 const ChatInput = ({ onSend, isLoading, onClear }: ChatInputProps) => {
   const [text, setText] = useState("");
@@ -23,12 +24,12 @@ const ChatInput = ({ onSend, isLoading, onClear }: ChatInputProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const validateImage = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select a valid image file");
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      toast.error("Please select a JPG or PNG image (max 8MB)");
       return false;
     }
     if (file.size > MAX_FILE_SIZE) {
-      toast.error("Image size must be less than 10MB");
+      toast.error("Image size must be less than 8MB");
       return false;
     }
     return true;
@@ -132,7 +133,7 @@ const ChatInput = ({ onSend, isLoading, onClear }: ChatInputProps) => {
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png"
             onChange={handleImageSelect}
             className="hidden"
           />

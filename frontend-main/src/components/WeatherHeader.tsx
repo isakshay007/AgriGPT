@@ -19,7 +19,8 @@ interface WeatherData {
   location: string;
 }
 
-const BACKEND_URL = "http://localhost:8000";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL?.trim() || "http://localhost:8000";
 
 const WeatherHeader = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -30,12 +31,16 @@ const WeatherHeader = () => {
 
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        const res = await fetch(
-          `${BACKEND_URL}/weather/current?lat=${latitude}&lon=${longitude}`
-        );
-        const data = await res.json();
-        if (!data?.error) setWeather(data);
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(
+            `${API_BASE}/weather/current?lat=${latitude}&lon=${longitude}`
+          );
+          const data = await res.json();
+          if (!data?.error) setWeather(data);
+        } catch {
+          console.warn("Weather fetch failed");
+        }
       },
       () => console.warn("Location permission denied")
     );

@@ -72,3 +72,13 @@ export const askChat = (
   const payload = buildFormData(payloadObj);
   return postFormData("/ask/chat", payload);
 };
+
+// Feedback for quality metrics
+export const submitFeedback = (
+  requestId: string,
+  feedback: "positive" | "negative",
+  source: "chat" | "image" = "chat"
+): Promise<{ status: string }> =>
+  apiClient.post("/metrics/feedback", null, {
+    params: { request_id: requestId, feedback, source },
+  }).then((r) => r.data);

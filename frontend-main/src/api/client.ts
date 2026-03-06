@@ -31,13 +31,16 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    const normalizedError = {
-      status: error.response?.status || 500,
-      message:
-        (error.response?.data as any)?.detail ||
-        error.message ||
-        "Unknown API error",
-    };
+    const rawDetail = (error.response?.data as any)?.detail;
+    let message: string;
+    if (Array.isArray(rawDetail) && rawDetail.length > 0) {
+      message = rawDetail.map((e: any) => e.msg || JSON.stringify(e)).join("; ");
+    } else if (typeof rawDetail === "string") {
+      message = rawDetail;
+    } else {
+      message = error.message || "Unknown API error";
+    }
+    const normalizedError = { status: error.response?.status || 500, message };
 
     if (import.meta.env.DEV) {
       console.error(

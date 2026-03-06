@@ -1,5 +1,6 @@
 from backend.services.text_service import query_groq_text
 from backend.agents.agri_agent_base import AgriAgentBase
+from backend.core.prompt_loader import get_prompt
 
 
 class YieldAgent(AgriAgentBase):
@@ -11,7 +12,15 @@ class YieldAgent(AgriAgentBase):
 
     name = "YieldAgent"
 
-    def handle_query(self, query: str = None, image_path: str = None, chat_history: str = None) -> str:
+    def handle_query(
+        self,
+        query: str = None,
+        image_path: str = None,
+        chat_history: str = None,
+        request_id: str = None,
+        session_id: str = None,
+        **kwargs,
+    ) -> str:
 
         if not query or not isinstance(query, str) or not query.strip():
             response = (
@@ -22,36 +31,21 @@ class YieldAgent(AgriAgentBase):
 
         clean_query = query.strip()
 
-        prompt = (
-            "You are AgriGPT YieldAgent. "
-            "Your role is to analyze yield-related problems conservatively. "
-            "Do not give guaranteed yield numbers or exact targets. "
-            "Use conditional language only. "
-            "Do not prescribe chemical dosages or irrigation schedules. "
-            "Do not override crop, irrigation, or pest specialists. "
-
-            "Explain the following clearly and simply: "
-            "First, describe broad expected yield ranges only if crop and region are mentioned, "
-            "and clearly state that actual yield depends on conditions. "
-
-            "Next, identify the most common limiting factors that reduce yield, "
-            "such as soil fertility gaps, water stress, planting time, seed quality, "
-            "pest pressure, or climate stress. "
-
-            "Then, suggest practical next steps focused on diagnosis and prioritization only, "
-            "for example soil testing, irrigation review, or pest inspection, "
-            "without giving exact schedules or dosages. "
-
-            "If important details are missing, say so clearly. "
-            "Keep the language farmer-friendly and non-technical. "
-            "Avoid repetition and avoid theory. "
-            
-            f"PREVIOUS CONTEXT: {chat_history if chat_history else 'None'}"
-            f"Farmer question: {clean_query}"
-        )
+        try:
+            prompt = get_prompt(
+                "yield_agent.template",
+                chat_history=chat_history or "None",
+                query=clean_query,
+            )
+        except Exception:
+            prompt = f"PREVIOUS CONTEXT: {chat_history or 'None'}\nFarmer question: {clean_query}"
 
         try:
-            result = query_groq_text(prompt)
+            result, _ = query_groq_text(
+                prompt,
+                request_id=request_id,
+                session_id=session_id,
+            )
         except Exception:
             result = "Yield analysis could not be generated at this time."
 

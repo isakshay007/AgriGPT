@@ -14,6 +14,9 @@ class AgriAgentBase(ABC):
         query: Optional[str] = None,
         image_path: Optional[str] = None,
         chat_history: Optional[str] = None,
+        request_id: Optional[str] = None,
+        session_id: Optional[str] = None,
+        **kwargs,
     ) -> str:
         pass
 
