@@ -1,0 +1,16 @@
+# Render Blueprint - AgriGPT
+# Ensures correct Docker paths (Root Directory must be repo root for backend)
+
+services:
+  - type: web
+    name: agrigpt-api
+    runtime: docker
+    # Root dir = repo root (do NOT set rootDir or docker paths break)
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: PYTHONUNBUFFERED
+        value: "1"

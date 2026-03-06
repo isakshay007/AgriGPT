@@ -30,11 +30,14 @@ Deploy backend and frontend on Render. In-memory chat (no Redis).
 | **Region** | Oregon (US West) or nearest |
 | **Branch** | `main` |
 
-### Step 5: Runtime – Docker
+### Step 5: Runtime – Docker (critical)
 
 1. Set **Runtime** to **Docker**
-2. **Root Directory:** leave blank
-3. **Dockerfile Path:** leave blank (uses `Dockerfile` at repo root)
+2. **Root Directory:** must be empty (delete any value like `frontend-main` or `src`)
+3. **Dockerfile Path:** `./Dockerfile` or leave blank
+4. **Docker Context:** `.` or leave blank
+
+> If Root Directory is set (e.g. to frontend-main), paths break and you get "src: is a directory".
 
 ### Step 6: Instance Type
 
