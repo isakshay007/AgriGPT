@@ -6,18 +6,6 @@
 
 Unlike generic chatbots, AgriGPT decomposes user intent and orchestrates multiple constrained expert agents—**reducing hallucinations** and enabling **explainable, grounded responses**.
 
----
-
-## Table of Contents
-
-- [Architecture](#-architecture)
-- [Key Features](#-key-features)
-- [Project Structure](#-project-structure)
-- [Agents](#-agent-based-design)
-- [API & Metrics](#-api--metrics)
-- [Technology Stack](#-technology-stack)
-- [Getting Started](#-getting-started)
-- [Authors](#-authors)
 
 ---
 
@@ -78,42 +66,6 @@ flowchart TB
     WeatherRouter --> Weather
 ```
 
-### Request Flow
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant Frontend
-    participant API
-    participant MasterAgent
-    participant Router
-    participant Agent
-    participant LLM
-    participant Memory
-    participant RAG
-
-    User->>Frontend: Query (text / image)
-    Frontend->>API: POST /ask/chat
-    API->>MasterAgent: route_query()
-    MasterAgent->>Memory: get_chat_history()
-    alt Text-only
-        MasterAgent->>Router: LLM relevance scoring
-        Router->>MasterAgent: Agent scores (0–100)
-        MasterAgent->>Agent: handle_query() [parallel]
-    else Image present
-        MasterAgent->>Agent: PestAgent (primary)
-    end
-    Agent->>LLM: Groq API (text / vision)
-    Agent-->>MasterAgent: response
-    alt Subsidy query
-        Agent->>RAG: invoke_subsidy_rag_chain()
-    end
-    MasterAgent->>FormatterAgent: synthesize
-    MasterAgent->>Memory: add_message_to_history()
-    FormatterAgent-->>API: response
-    API-->>Frontend: JSON + token_usage
-    Frontend-->>User: Display
-```
 
 ---
 
@@ -308,7 +260,7 @@ This project is intended for academic purposes only.
 
 ---
 
-## Authors
+## Author
 
 **Akshay Keerthi Adhikasavan Suresh** 
 
