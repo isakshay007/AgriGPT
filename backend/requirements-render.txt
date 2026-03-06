@@ -1,0 +1,19 @@
+# Lean production requirements for Render (FAISS only, no Pinecone/Redis/test deps)
+fastapi
+uvicorn
+groq
+pydantic
+requests
+langchain
+langchain-community
+langchain-core
+langchain-groq
+langsmith
+sentencepiece>=0.2.0
+sentence-transformers>=2.2.0
+faiss-cpu
+numpy
+python-multipart
+pydantic-settings
+pyyaml
+redis>=5.0.0

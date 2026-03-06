@@ -1,0 +1,3 @@
+# For Render Native Python - sentence-transformers needs cmake
+[phases.setup]
+aptPkgs = ["cmake", "build-essential"]
