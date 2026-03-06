@@ -34,7 +34,7 @@ Deploy backend and frontend on Render. In-memory chat (no Redis).
 
 1. Set **Runtime** to **Python 3** (not Docker)
 2. **Root Directory:** leave empty
-3. **Build Command:** `pip install --no-cache-dir -r backend/requirements-render.txt`
+3. **Build Command:** `pip install -r backend/requirements.txt`
 4. **Start Command:** `PYTHONPATH=. uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 
 ### Step 6: Instance Type
@@ -145,11 +145,3 @@ Examples:
 | Frontend | Static Site | `https://agrigpt.onrender.com` |
 
 **Free limits:** Backend sleeps after 15 min; first request after that ~1 min to wake. Frontend does not sleep.
-
----
-
-## Deployment Optimizations (Lean Build)
-
-- **requirements-render.txt** – production-only deps (no pytest, httpx, pinecone). Faster builds.
-- **Build command** uses `--no-cache-dir` to reduce disk usage.
-- Removed: root Dockerfile (unused), simple_ask_router (unmounted).
