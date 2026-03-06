@@ -1,3 +1,5 @@
+# AgriGPT Backend - for Render (repo root) and docker-compose
+# Build context: repo root
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -8,7 +10,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy backend (context is project root when built via docker-compose)
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
