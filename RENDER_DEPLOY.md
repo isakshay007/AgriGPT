@@ -30,14 +30,12 @@ Deploy backend and frontend on Render. In-memory chat (no Redis).
 | **Region** | Oregon (US West) or nearest |
 | **Branch** | `main` |
 
-### Step 5: Runtime – Docker (critical)
+### Step 5: Runtime – Python 3 (Native, avoids Docker error)
 
-1. Set **Runtime** to **Docker**
-2. **Root Directory:** must be empty (delete any value like `frontend-main` or `src`)
-3. **Dockerfile Path:** `./Dockerfile` or leave blank
-4. **Docker Context:** `.` or leave blank
-
-> If Root Directory is set (e.g. to frontend-main), paths break and you get "src: is a directory".
+1. Set **Runtime** to **Python 3** (not Docker)
+2. **Root Directory:** leave empty
+3. **Build Command:** `pip install -r backend/requirements.txt`
+4. **Start Command:** `PYTHONPATH=. uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 
 ### Step 6: Instance Type
 
@@ -143,7 +141,7 @@ Examples:
 
 | Service | Type | URL |
 |---------|------|-----|
-| Backend | Web Service (Docker) | `https://agrigpt-api.onrender.com` |
+| Backend | Web Service (Python) | `https://agrigpt-api.onrender.com` |
 | Frontend | Static Site | `https://agrigpt.onrender.com` |
 
 **Free limits:** Backend sleeps after 15 min; first request after that ~1 min to wake. Frontend does not sleep.
